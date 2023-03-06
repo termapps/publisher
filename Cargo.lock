@@ -53,13 +53,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cli-clap"
-version = "0.0.1"
-dependencies = [
- "clap",
-]
-
-[[package]]
 name = "errno"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -169,6 +162,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d727cae5b39d21da60fa540906919ad737832fe0b1c165da3a34d6548c849d6"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "publisher"
+version = "0.0.1"
+dependencies = [
+ "clap",
 ]
 
 [[package]]

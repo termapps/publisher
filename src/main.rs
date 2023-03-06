@@ -1,8 +1,8 @@
 use clap::Parser;
 
-/// A simple CLI application using clap
+/// Tool to publish & distribute CLI tools
 #[derive(Debug, Parser)]
-#[clap(name = "cli-clap")]
+#[clap(name = "publisher")]
 struct App {
     #[clap(subcommand)]
     cmd: Subcommands,

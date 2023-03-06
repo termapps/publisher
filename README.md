@@ -1,7 +1,7 @@
 <!-- omit from toc -->
-# cli-clap
+# publisher
 
-A simple CLI application using clap
+Tool to publish & distribute CLI tools
 
 1. [Install](#install)
 2. [Usage](#usage)
@@ -9,27 +9,27 @@ A simple CLI application using clap
 
 ## Install
 
-`cli-clap` is available on Linux, macOS
+`publisher` is available on Linux, macOS
 
 <!-- omit from toc -->
 ### With [Homebrew](https://brew.sh/)
 
 ```
 $ brew tap termapps/tap
-$ brew install cli-clap
+$ brew install publisher
 ```
 
 <!-- omit from toc -->
 ### With [cargo](https://crates.io/)
 
 ```
-$ cargo install cli-clap
+$ cargo install publisher
 ```
 
 <!-- omit from toc -->
 ### Direct
 
-Pre-built binary executables are available at [releases page](https://github.com/termapps/cli-clap/releases) for macOS (64bit), Linux (64bit, 32bit).
+Pre-built binary executables are available at [releases page](https://github.com/termapps/publisher/releases) for macOS (64bit), Linux (64bit, 32bit).
 
 Download and unarchive the binary then put the executable in `$PATH`.
 
@@ -37,7 +37,7 @@ Download and unarchive the binary then put the executable in `$PATH`.
 
 <!-- omit from toc -->
 ## Contributors
-Here is a list of [Contributors](http://github.com/termapps/cli-clap/contributors)
+Here is a list of [Contributors](http://github.com/termapps/publisher/contributors)
 
 <!-- omit from toc -->
 ### TODO
@@ -51,4 +51,4 @@ MIT/X11
 
 <!-- omit from toc -->
 ## Bug Reports
-Report [here](http://github.com/termapps/cli-clap/issues).
+Report [here](http://github.com/termapps/publisher/issues).
