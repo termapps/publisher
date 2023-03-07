@@ -1,6 +1,6 @@
-name = "cli-clap"
-description = "A simple CLI application using clap"
-repository = "termapps/cli-clap"
+name = "publisher"
+description = "Tool to publish & distribute CLI tools"
+repository = "termapps/publisher"
 license = "MIT"
-homepage = "https://github.com/termapps/cli-clap"
+homepage = "https://github.com/termapps/publisher"
 
