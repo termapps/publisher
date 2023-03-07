@@ -1,7 +1,20 @@
-<!-- omit from toc -->
-# publisher
+<h1 align="center">publisher</h1>
 
-Tool to publish & distribute CLI tools
+<p align="center">
+  <a href="https://termapps.zulipchat.com/#narrow/stream/375287-publisher">
+    <img alt="Zulip" src="https://img.shields.io/badge/zulip-join_chat-brightgreen.svg?style=flat-square">
+  </a>
+  <a href="https://crates.io/crates/publisher">
+    <img alt="Crates.io" src="https://img.shields.io/crates/v/publisher?style=flat-square">
+  </a>
+</p>
+
+<p align="center">
+  <b>Tool to publish & distribute CLI tools</b>
+</p>
+
+<!-- omit from toc -->
+## Getting started
 
 1. [Install](#install)
 2. [Usage](#usage)
@@ -15,8 +28,7 @@ Tool to publish & distribute CLI tools
 ### With [Homebrew](https://brew.sh/)
 
 ```
-$ brew tap termapps/tap
-$ brew install publisher
+$ brew install termapps/tap/publisher
 ```
 
 <!-- omit from toc -->
@@ -52,3 +64,9 @@ MIT/X11
 <!-- omit from toc -->
 ## Bug Reports
 Report [here](http://github.com/termapps/publisher/issues).
+
+<!-- omit from toc -->
+## Creator
+Pavan Kumar Sunkara (pavan.sss1991@gmail.com)
+
+Follow me on [github](https://github.com/users/follow?target=pksunkara), [twitter](http://twitter.com/pksunkara)

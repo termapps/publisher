@@ -15,6 +15,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "50d30906286121d95be3d479533b458f87493b30a4b5f79a607db8f5d11aa91f"
 
 [[package]]
+name = "cfg-if"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
 name = "clap"
 version = "4.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -28,6 +34,16 @@ dependencies = [
  "strsim",
  "termcolor",
  "terminal_size",
+]
+
+[[package]]
+name = "clap-verbosity-flag"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23e2b6c3dcdb73299f48ae05b294da14e2f560b3ed2c09e742269eb1b22af231"
+dependencies = [
+ "clap",
+ "log",
 ]
 
 [[package]]
@@ -51,6 +67,33 @@ checksum = "350b9cf31731f9957399229e9b2adc51eeabdfbe9d71d9a0552275fd12710d09"
 dependencies = [
  "os_str_bytes",
 ]
+
+[[package]]
+name = "concolor"
+version = "0.0.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7b3e3c41e9488eeda196b6806dbf487742107d61b2e16485bcca6c25ed5755b"
+dependencies = [
+ "bitflags",
+ "concolor-query",
+ "is-terminal",
+]
+
+[[package]]
+name = "concolor-clap"
+version = "0.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bf2a9ab06b97f9c7a0413cffaa2573c67497b41f59b6c4188b5464e0078a2cb"
+dependencies = [
+ "clap",
+ "concolor",
+]
+
+[[package]]
+name = "concolor-query"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82a90734b3d5dcf656e7624cca6bce9c3a90ee11f900e80141a7427ccfb3d317"
 
 [[package]]
 name = "errno"
@@ -120,6 +163,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f051f77a7c8e6957c0696eac88f26b0117e54f52d3fc682ab19397a8812846a4"
 
 [[package]]
+name = "log"
+version = "0.4.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
+dependencies = [
+ "cfg-if",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -169,6 +221,8 @@ name = "publisher"
 version = "0.0.1"
 dependencies = [
  "clap",
+ "clap-verbosity-flag",
+ "concolor-clap",
 ]
 
 [[package]]
