@@ -75,7 +75,10 @@ impl Repository for Aur {
         )
         .run()?;
         cmd!(sh, "git fetch aur").run()?;
-        cmd!(sh, "git checkout master").run()?;
+
+        if let Ok(_) = cmd!(sh, "git ls-remote --exit-code --heads aur master").run() {
+            cmd!(sh, "git checkout master").run()?;
+        }
 
         let mut pkgbuild = String::new();
 
