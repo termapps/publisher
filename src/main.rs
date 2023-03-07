@@ -1,6 +1,8 @@
+mod repositories;
+
 mod error;
 
-mod hello;
+mod check;
 
 use clap::Parser;
 use clap_verbosity_flag::Verbosity;
@@ -23,7 +25,7 @@ struct App {
 
 #[derive(Debug, Parser)]
 enum Subcommands {
-    Hello(hello::Hello),
+    Check(check::Check),
 }
 
 fn main() {
@@ -32,7 +34,7 @@ fn main() {
     program.color.apply();
 
     let result = match program.cmd {
-        Subcommands::Hello(x) => x.run(),
+        Subcommands::Check(x) => x.run(),
     };
 
     error::finish(result);

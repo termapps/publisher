@@ -19,6 +19,8 @@ clap                = { version = "~4.1.8", features = ["derive", "wrap_help"] }
 clap-verbosity-flag = "~2.0.0"
 concolor-clap       = { version = "0.0.14", features = ["api_unstable"] }
 
+xshell = "~0.2.3"
+
 [[bin]]
 name = "publisher"
 path = "src/main.rs"
