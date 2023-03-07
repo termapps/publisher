@@ -15,8 +15,7 @@ A simple CLI application using clap
 ### With [Homebrew](https://brew.sh/)
 
 ```
-$ brew tap termapps/tap
-$ brew install cli-clap
+$ brew install termapps/tap/cli-clap
 ```
 
 <!-- omit from toc -->

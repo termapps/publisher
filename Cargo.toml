@@ -15,7 +15,9 @@ license    = "MIT"
 readme     = "README.md"
 
 [dependencies]
-clap = { version = "~4.1.8", features = ["derive", "wrap_help"] }
+clap                = { version = "~4.1.8", features = ["derive", "wrap_help"] }
+clap-verbosity-flag = "~2.0.0"
+concolor-clap       = { version = "0.0.14", features = ["api_unstable"] }
 
 [[bin]]
 name = "cli-clap"
@@ -23,3 +25,6 @@ path = "src/main.rs"
 
 [profile.release]
 lto = "thin"
+
+[workspace.metadata.workspaces]
+no_individual_tags = true
