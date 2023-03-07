@@ -30,7 +30,7 @@ jobs:
         env:
           REF: ${{ github.ref }}
         shell: bash
-        run: echo ::set-output name=VERSION::${REF/refs\/tags\//}
+        run: echo "VERSION=${REF/refs\/tags\//}" >> $GITHUB_OUTPUT
   build-upload:
     name: Build & Upload
     needs: [create-release, read-version]
@@ -76,27 +76,40 @@ jobs:
         env:
           BUILD_NAME: ${{ env.NAME }}-${{ needs.read-version.outputs.version }}-${{ matrix.target }}
         shell: bash
-        run: echo ::set-output name=BUILD_NAME::$BUILD_NAME
+        run: echo "BUILD_NAME=$BUILD_NAME" >> $GITHUB_OUTPUT
       - name: Ready artifacts
         env:
-          BUILD_NAME: ${{ steps.vars.outputs.BUILD_NAME }}
           TARGET: ${{ matrix.target }}
         shell: bash
         run: |
-          mkdir $BUILD_NAME
-          cp target/$TARGET/release/$NAME LICENSE $BUILD_NAME
+          mkdir upload
+          cp target/$TARGET/release/$NAME LICENSE upload
       - name: Compress artifacts
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1
         with:
-          files: ${{ steps.vars.outputs.BUILD_NAME }}/
-          recursive: false
-          dest: ${{ steps.vars.outputs.BUILD_NAME }}.zip
+          files: upload/
+          recursive: true
+          dest: upload.zip
       - name: Upload artifacts
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./${{ steps.vars.outputs.BUILD_NAME }}.zip
+          asset_path: ./upload.zip
           asset_name: ${{ steps.vars.outputs.BUILD_NAME }}.zip
           asset_content_type: application/zip
+      - name: Calculate checksum
+        id: calculate
+        shell: bash
+        run: |
+          echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt
+      - name: Upload checksums
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./sha256sum.txt
+          asset_name: ${{ steps.vars.outputs.BUILD_NAME }}_sha256sum.txt
+          asset_content_type: text/plain
