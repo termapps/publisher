@@ -3,6 +3,7 @@ mod repositories;
 mod error;
 
 mod check;
+mod publish;
 
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
@@ -26,6 +27,7 @@ struct App {
 #[derive(Debug, Parser)]
 enum Subcommands {
     Check(check::Check),
+    Publish(publish::Publish),
 }
 
 fn main() {
@@ -41,6 +43,7 @@ fn main() {
 
     let result = match program.cmd {
         Subcommands::Check(x) => x.run(),
+        Subcommands::Publish(x) => x.run(),
     };
 
     error::finish(result);

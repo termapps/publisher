@@ -2,6 +2,12 @@ use std::{io, process::exit};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Unable to parse the configuration file: {0}")]
+    Config(#[from] config::ConfigError),
+    #[error("Unable to run a command: {0}")]
+    Xshell(#[from] xshell::Error),
+    #[error("{0}")]
+    Fmt(#[from] std::fmt::Error),
     #[error("{0}")]
     Io(#[from] io::Error),
 }

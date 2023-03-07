@@ -5,38 +5,29 @@ use std::{
 
 use crate::{
     error::Result,
-    repositories::{Repositories, Repository},
+    repositories::{build_config, Repositories, Repository},
 };
 
-use clap::{Parser, ValueEnum};
+use clap::Parser;
 use xshell::{cmd, Shell};
 
-/// Check the requirements for publishing
+/// Check requirements for publishing to package repositories
 #[derive(Debug, Parser)]
 pub struct Check {
-    // TODO: Make this a common option
     /// The name(s) of the package repository
     repositories: Vec<Repositories>,
 }
 
 impl Check {
     pub fn run(self) -> Result {
-        let repositories = if self.repositories.is_empty() {
-            Repositories::value_variants().iter()
-        } else {
-            self.repositories.iter()
-        }
-        .map(Repositories::build_config)
-        .collect::<Vec<_>>();
-
+        let repositories = build_config(&self.repositories);
         let mut check_results = CheckResults::default();
 
         for repository in repositories {
             let name = repository.name();
 
             print!("Checking {name}... ");
-            // TODO: Fix all unwraps
-            io::stdout().flush().unwrap();
+            io::stdout().flush()?;
 
             check_results.current = Some(name);
             repository.check(&mut check_results)?;
@@ -102,6 +93,21 @@ pub fn check_git(sh: &Shell, results: &mut CheckResults) {
                 (!output.contains("git version")).then_some("git is not installed")
             } else {
                 Some("git is not installed")
+            },
+        );
+    }
+}
+
+pub fn check_curl(sh: &Shell, results: &mut CheckResults) {
+    if !results.has_checked(&"curl") {
+        let output = cmd!(sh, "curl --version").quiet().ignore_status().read();
+
+        results.add_result(
+            "curl",
+            if let Ok(output) = output {
+                (!output.contains("curl ")).then_some("curl is not installed")
+            } else {
+                Some("curl is not installed")
             },
         );
     }
