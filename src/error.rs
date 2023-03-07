@@ -1,15 +1,19 @@
 use std::{io, process::exit};
 
-#[derive(Debug)]
-pub enum Error {}
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("{0}")]
+    Io(#[from] io::Error),
+}
 
 impl Error {
-    pub fn print(&self) -> io::Result<()> {
-        // TODO: print error message
+    fn print(self) -> io::Result<()> {
+        eprintln!("error: {self}");
+
         Ok(())
     }
 
-    pub fn code(&self) -> i32 {
+    fn code(&self) -> i32 {
         1
     }
 }

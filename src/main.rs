@@ -5,7 +5,7 @@ mod error;
 mod check;
 
 use clap::Parser;
-use clap_verbosity_flag::Verbosity;
+use clap_verbosity_flag::{InfoLevel, Verbosity};
 use concolor_clap::{color_choice, Color};
 
 /// Tool to publish & distribute CLI tools
@@ -20,7 +20,7 @@ struct App {
     color: Color,
 
     #[clap(flatten)]
-    verbose: Verbosity,
+    verbose: Verbosity<InfoLevel>,
 }
 
 #[derive(Debug, Parser)]
@@ -32,6 +32,12 @@ fn main() {
     let program = App::parse();
 
     program.color.apply();
+
+    env_logger::Builder::from_default_env()
+        .format_target(false)
+        .format_timestamp(None)
+        .filter_level(program.verbose.log_level_filter())
+        .init();
 
     let result = match program.cmd {
         Subcommands::Check(x) => x.run(),

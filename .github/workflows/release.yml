@@ -58,12 +58,14 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: 1.68.0
           target: ${{ matrix.target }}
           override: true
       - name: Install linker
         if: matrix.target == 'i686-unknown-linux-gnu'
-        run: sudo apt-get install gcc-5-multilib lib32gcc-5-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-multilib
       - name: Build
         uses: actions-rs/cargo@v1
         with:
@@ -82,7 +84,7 @@ jobs:
         shell: bash
         run: |
           mkdir $BUILD_NAME
-          cp target/$TARGET/release/$NAME LICENSE *.md $NAME.1 $BUILD_NAME
+          cp target/$TARGET/release/$NAME LICENSE $BUILD_NAME
       - name: Compress artifacts
         uses: papeloto/action-zip@v1
         with:
@@ -98,18 +100,3 @@ jobs:
           asset_path: ./${{ steps.vars.outputs.BUILD_NAME }}.zip
           asset_name: ${{ steps.vars.outputs.BUILD_NAME }}.zip
           asset_content_type: application/zip
-  homebrew:
-    name: Homebrew
-    needs: [build-upload, read-version]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout tap
-        uses: actions/checkout@v2
-        with:
-          repository: termapps/homebrew-tap
-          ssh-key: ${{ secrets.HOMEBREW_SSH_DEPLOY_KEY }}
-      - name: Update forumla
-        env:
-          REPO: ${{ github.repository }}
-          TAG: ${{ needs.read-version.outputs.version }}
-        run: bash update.sh

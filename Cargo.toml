@@ -17,7 +17,10 @@ readme     = "README.md"
 [dependencies]
 clap                = { version = "~4.1.8", features = ["derive", "wrap_help"] }
 clap-verbosity-flag = "~2.0.0"
-concolor-clap       = { version = "0.0.14", features = ["api_unstable"] }
+concolor-clap       = { version = "=0.0.14", features = ["api_unstable"] }
+env_logger          = { version = "~0.10.0", default-features = false, features = ["auto-color", "color"] }
+log                 = "0.4.17"
+thiserror           = "~1.0.39"
 
 xshell = "~0.2.3"
 
