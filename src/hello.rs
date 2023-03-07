@@ -1,4 +1,6 @@
-use crate::error::Result;
+use std::io::{stdout, Write};
+
+use crate::error::{Error, Result};
 
 use clap::Parser;
 
@@ -11,7 +13,12 @@ pub struct Hello {
 
 impl Hello {
     pub fn run(self) -> Result {
+        if self.name == "world" {
+            return Err(Error::World);
+        }
+
         println!("Hello, {}!", self.name);
+        stdout().flush()?;
 
         Ok(())
     }
