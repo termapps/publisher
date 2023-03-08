@@ -1,4 +1,5 @@
 mod aur;
+mod homebrew;
 
 use clap::ValueEnum;
 
@@ -15,17 +16,19 @@ pub trait Repository {
 #[derive(Debug, Clone, ValueEnum)]
 pub enum Repositories {
     Aur,
+    Homebrew,
 }
 
 impl Repositories {
-    pub fn build_config(&self) -> impl Repository {
+    fn build_config(&self) -> Box<dyn Repository> {
         match self {
-            Repositories::Aur => aur::Aur,
+            Repositories::Aur => Box::new(aur::Aur),
+            Repositories::Homebrew => Box::new(homebrew::Homebrew),
         }
     }
 }
 
-pub fn build_config(repositories: &[Repositories]) -> Vec<impl Repository> {
+pub fn build_config(repositories: &[Repositories]) -> Vec<Box<dyn Repository>> {
     if !repositories.is_empty() {
         repositories.iter()
     } else {

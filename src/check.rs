@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     error::Result,
-    repositories::{build_config, Repositories, Repository},
+    repositories::{build_config, Repositories},
 };
 
 use clap::Parser;

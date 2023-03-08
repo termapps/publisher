@@ -22,9 +22,10 @@ env_logger          = { version = "~0.10.0", default-features = false, features 
 log                 = "0.4.17"
 thiserror           = "~1.0.39"
 
-config = { version = "~0.13.3", default-features = false, features = ["toml"] }
+config = { version = "0.13.3", default-features = false, features = ["toml"] }
+heck   = "0.4.1"
 serde  = { version = "1.0.153", features = ["derive"] }
-xshell = "~0.2.3"
+xshell = "0.2.3"
 
 [[bin]]
 name = "publisher"

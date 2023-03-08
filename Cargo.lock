@@ -295,6 +295,7 @@ dependencies = [
  "concolor-clap",
  "config",
  "env_logger",
+ "heck",
  "log",
  "serde",
  "thiserror",

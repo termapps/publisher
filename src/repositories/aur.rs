@@ -5,7 +5,7 @@ use xshell::{cmd, Shell};
 use crate::{
     check::{check_curl, check_git, CheckResults},
     error::Result,
-    publish::PublishInfo,
+    publish::{commit_and_push, prepare_git_repo, PublishInfo},
     repositories::Repository,
 };
 
@@ -38,8 +38,6 @@ impl Repository for Aur {
     }
 
     fn publish(&self, info: &PublishInfo, version: &str) -> Result {
-        let sh = Shell::new()?;
-
         let PublishInfo {
             name,
             description,
@@ -53,6 +51,8 @@ impl Repository for Aur {
             "https://github.com/{repository}/releases/download/v{version}/{name}-v{version}"
         );
 
+        let (sh, dir) = prepare_git_repo(self, &format!("ssh://aur@aur.archlinux.org/{name}.git"))?;
+
         let x86_64_checksum = cmd!(
             sh,
             "curl -L {download_url}-x86_64-unknown-linux-gnu_sha256sum.txt"
@@ -64,30 +64,15 @@ impl Repository for Aur {
         )
         .read()?;
 
-        cmd!(sh, "rm -rf /tmp/aur").run()?;
-        cmd!(sh, "mkdir -p /tmp/aur").run()?;
-        sh.change_dir("/tmp/aur");
-
-        cmd!(sh, "git init").run()?;
-        cmd!(
-            sh,
-            "git remote add aur ssh://aur@aur.archlinux.org/{name}.git"
-        )
-        .run()?;
-        cmd!(sh, "git fetch aur").run()?;
-
-        if let Ok(_) = cmd!(sh, "git ls-remote --exit-code --heads aur master").run() {
-            cmd!(sh, "git checkout master").run()?;
-        }
-
+        log::info!("Writing PKGBUILD");
         let mut pkgbuild = String::new();
 
         writeln!(pkgbuild, "pkgname={name}")?;
+        writeln!(pkgbuild, "pkgdesc={description:?}")?;
         writeln!(pkgbuild, "pkgver={version}")?;
         writeln!(pkgbuild, "pkgrel=0")?;
-        writeln!(pkgbuild, "pkgdesc={description:?}")?;
-        writeln!(pkgbuild, "arch=('x86_64' 'i686')")?;
         writeln!(pkgbuild, "url={homepage:?}")?;
+        writeln!(pkgbuild, "arch=('x86_64' 'i686')")?;
         writeln!(pkgbuild, "license=({license:?})")?;
         writeln!(pkgbuild, "provides=({name:?})")?;
         writeln!(
@@ -109,14 +94,38 @@ impl Repository for Aur {
         writeln!(pkgbuild, "    install -Dm644 \"$srcdir/LICENSE\" \"$pkgdir/usr/share/licenses/$pkgname/LICENSE\"")?;
         writeln!(pkgbuild, "}}")?;
 
-        write("/tmp/aur/PKGBUILD", pkgbuild)?;
+        write(format!("{dir}/PKGBUILD"), pkgbuild)?;
 
-        let srcinfo = cmd!(sh, "makepkg --printsrcinfo").read()?;
-        write("/tmp/aur/.SRCINFO", srcinfo)?;
+        log::info!("Writing SRCINFO");
+        let mut srcinfo = String::new();
+
+        writeln!(srcinfo, "pkgbase = {name}")?;
+        writeln!(srcinfo, "\tpkgdesc = {description}")?;
+        writeln!(srcinfo, "\tpkgver = {version}")?;
+        writeln!(srcinfo, "\tpkgrel = 0")?;
+        writeln!(srcinfo, "\turl = {homepage}")?;
+        writeln!(srcinfo, "\tarch = x86_64")?;
+        writeln!(srcinfo, "\tarch = i686")?;
+        writeln!(srcinfo, "\tlicense = {license}")?;
+        writeln!(srcinfo, "\tprovides = {name}")?;
+        writeln!(
+            srcinfo,
+            "\tsource_x86_64 = {name}-{version}.zip::{download_url}-x86_64-unknown-linux-gnu.zip"
+        )?;
+        writeln!(srcinfo, "\tsha256sums_x86_64 = {x86_64_checksum}")?;
+        writeln!(
+            srcinfo,
+            "\tsource_i686 = {name}-{version}.zip::{download_url}-i686-unknown-linux-gnu.zip"
+        )?;
+        writeln!(srcinfo, "\tsha256sums_i686 = {i686_checksum}")?;
+        writeln!(srcinfo, "")?;
+        writeln!(srcinfo, "pkgname = {name}")?;
+
+        write(format!("{dir}/.SRCINFO"), srcinfo)?;
 
         cmd!(sh, "git add PKGBUILD .SRCINFO").run()?;
-        cmd!(sh, "git commit -m 'Release '{version}").run()?;
-        cmd!(sh, "git push aur master").run()?;
+
+        commit_and_push(self, &sh, version)?;
 
         Ok(())
     }
