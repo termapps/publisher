@@ -8,19 +8,19 @@ homepage    = "https://github.com/termapps/cli-clap"
 repository  = "https://github.com/termapps/cli-clap"
 
 edition      = "2021"
-rust-version = "1.67.0"
+rust-version = "1.68.0"
 
 categories = ["command-line-utilities"]
 license    = "MIT"
 readme     = "README.md"
 
 [dependencies]
-clap                = { version = "~4.1.8", features = ["derive", "wrap_help"] }
-clap-verbosity-flag = "~2.0.0"
-concolor-clap       = { version = "=0.0.14", features = ["api_unstable"] }
-env_logger          = { version = "~0.10.0", default-features = false, features = ["auto-color", "color"] }
+clap                = { version = "4.1.8", features = ["derive", "wrap_help"] }
+clap-verbosity-flag = "2.0.0"
+concolor-clap       = { version = "0.0.14", features = ["api_unstable"] }
+env_logger          = { version = "0.10.0", default-features = false, features = ["auto-color", "color"] }
 log                 = "0.4.17"
-thiserror           = "~1.0.39"
+thiserror           = "1.0.39"
 
 [[bin]]
 name = "cli-clap"

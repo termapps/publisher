@@ -52,8 +52,6 @@ jobs:
           # - x86_64-pc-windows-gnu
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
       - name: Install rust
         uses: actions-rs/toolchain@v1
         with:
@@ -66,6 +64,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install gcc-multilib
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Build
         uses: actions-rs/cargo@v1
         with:
@@ -78,12 +78,10 @@ jobs:
         shell: bash
         run: echo "BUILD_NAME=$BUILD_NAME" >> $GITHUB_OUTPUT
       - name: Ready artifacts
-        env:
-          TARGET: ${{ matrix.target }}
         shell: bash
         run: |
           mkdir upload
-          cp target/$TARGET/release/$NAME LICENSE upload
+          cp target/${{ matrix.target }}/release/$NAME LICENSE upload
       - name: Compress artifacts
         uses: vimtor/action-zip@v1
         with:
