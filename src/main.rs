@@ -4,7 +4,10 @@ mod hello;
 
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
+use concolor::{get, Stream};
 use concolor_clap::{color_choice, Color};
+use tracing_log::AsTrace;
+use tracing_subscriber::prelude::*;
 
 /// A simple CLI application using clap
 #[derive(Debug, Parser)]
@@ -31,10 +34,14 @@ fn main() {
 
     program.color.apply();
 
-    env_logger::Builder::from_default_env()
-        .format_target(false)
-        .format_timestamp(None)
-        .filter_level(program.verbose.log_level_filter())
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::fmt::layer()
+                .without_time()
+                .with_target(false)
+                .with_ansi(get(Stream::Stdout).color())
+                .with_filter(program.verbose.log_level_filter().as_trace()),
+        )
         .init();
 
     let result = match program.cmd {

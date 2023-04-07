@@ -3,6 +3,7 @@ use std::io::{stdout, Write};
 use crate::error::{Error, Result};
 
 use clap::Parser;
+use tracing::{debug, instrument};
 
 /// Say hello to someone
 #[derive(Debug, Parser)]
@@ -12,12 +13,15 @@ pub struct Hello {
 }
 
 impl Hello {
+    #[instrument(name = "hello", skip_all)]
     pub fn run(self) -> Result {
         if self.name == "world" {
             return Err(Error::World);
         }
 
         println!("Hello, {}!", self.name);
+
+        debug!("flushing stdout");
         stdout().flush()?;
 
         Ok(())
