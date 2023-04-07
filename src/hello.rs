@@ -2,7 +2,9 @@ use std::io::{stdout, Write};
 
 use crate::error::{Error, Result};
 
+use anstream::println;
 use clap::Parser;
+use owo_colors::OwoColorize;
 use tracing::{debug, instrument};
 
 /// Say hello to someone
@@ -19,7 +21,7 @@ impl Hello {
             return Err(Error::World);
         }
 
-        println!("Hello, {}!", self.name);
+        println!("Hello, {}!", self.name.yellow());
 
         debug!("flushing stdout");
         stdout().flush()?;

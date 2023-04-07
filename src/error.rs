@@ -1,4 +1,8 @@
-use std::{io, process::exit};
+use anstream::{stderr, stdout};
+use std::{
+    io::{self, Write},
+    process::exit,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -32,7 +36,8 @@ pub fn finish(result: Result) {
         0
     };
 
-    // TODO: Flush stdout and stderr
+    stdout().flush().unwrap();
+    stderr().flush().unwrap();
 
     exit(code);
 }
