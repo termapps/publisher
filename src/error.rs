@@ -1,22 +1,23 @@
-use anstream::{stderr, stdout};
 use std::{
-    io::{self, Write},
+    io::{stderr, stdout, Error as IoError, Write},
     process::exit,
+    result::Result as StdResult,
 };
+
+use anstream::eprintln;
+use owo_colors::OwoColorize;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("You cannot use cliche")]
     World,
     #[error("{0}")]
-    Io(#[from] io::Error),
+    Io(#[from] IoError),
 }
 
 impl Error {
-    fn print(self) -> io::Result<()> {
-        eprintln!("error: {self}");
-
-        Ok(())
+    fn print(&self) {
+        eprintln!("{}: {self}", "error".red().bold());
     }
 
     fn code(&self) -> i32 {
@@ -24,14 +25,12 @@ impl Error {
     }
 }
 
-pub type Result<T = ()> = std::result::Result<T, Error>;
+pub type Result<T = ()> = StdResult<T, Error>;
 
 pub fn finish(result: Result) {
     let code = if let Some(e) = result.err() {
-        let code = e.code();
-
-        e.print().unwrap();
-        code
+        e.print();
+        e.code()
     } else {
         0
     };
