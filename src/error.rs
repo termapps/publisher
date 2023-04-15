@@ -1,10 +1,10 @@
 use std::{
-    io::{stderr, stdout, Error as IoError, Write},
+    io::{Error as IoError, Write},
     process::exit,
     result::Result as StdResult,
 };
 
-use anstream::eprintln;
+use anstream::{eprintln, stderr, stdout};
 use owo_colors::OwoColorize;
 
 #[derive(Debug, thiserror::Error)]

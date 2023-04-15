@@ -1,8 +1,8 @@
-use std::io::{stdout, Write};
+use std::io::Write;
 
 use crate::error::{Error, Result};
 
-use anstream::println;
+use anstream::{println, stdout};
 use clap::Parser;
 use owo_colors::OwoColorize;
 use tracing::{debug, instrument};
