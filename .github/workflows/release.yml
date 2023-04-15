@@ -53,12 +53,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@1.68.0
         with:
-          profile: minimal
-          toolchain: 1.68.0
           target: ${{ matrix.target }}
-          override: true
       - name: Install linker
         if: matrix.target == 'i686-unknown-linux-gnu'
         run: |
@@ -67,10 +64,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --target ${{ matrix.target }} --release
+        run: cargo build --target ${{ matrix.target }} --release
       - name: Set variables
         id: vars
         env:
