@@ -1,9 +1,9 @@
-env:
-  NAME: cli-clap
 name: Release
 on:
   push:
     tags: [v*]
+env:
+  NAME: ${{ github.event.repository.name }}
 jobs:
   create-release:
     name: Create release
