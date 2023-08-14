@@ -1,11 +1,11 @@
 use std::{
     io::{Error as IoError, Write},
-    process::exit,
     result::Result as StdResult,
 };
 
 use anstream::{eprintln, stderr, stdout};
 use owo_colors::OwoColorize;
+use proc_exit::Code;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -20,8 +20,8 @@ impl Error {
         eprintln!("{}: {self}", "error".red().bold());
     }
 
-    fn code(&self) -> i32 {
-        1
+    fn code(&self) -> Code {
+        Code::FAILURE
     }
 }
 
@@ -32,11 +32,11 @@ pub fn finish(result: Result) {
         e.print();
         e.code()
     } else {
-        0
+        Code::SUCCESS
     };
 
     stdout().flush().unwrap();
     stderr().flush().unwrap();
 
-    exit(code);
+    code.process_exit();
 }
