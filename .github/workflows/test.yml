@@ -1,18 +1,9 @@
-name: CI
-on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
-    types: [opened, reopened, synchronize]
+name: Testing
+on: [pull_request]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  ci:
-    name: CI
-    needs: [test, lint]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Done
-        run: exit 0
   test:
     strategy:
       fail-fast: false
@@ -32,6 +23,8 @@ jobs:
           # - x86_64-pc-windows-gnu
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Install rust
         uses: dtolnay/rust-toolchain@1.70.0
         with:
@@ -41,29 +34,5 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install gcc-multilib
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Test
         run: cargo test --target ${{ matrix.target }}
-  lockfile:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install rust
-        uses: dtolnay/rust-toolchain@1.70.0
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Lockfile check
-        run: cargo update -w --locked
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install rust
-        uses: dtolnay/rust-toolchain@1.70.0
-        with:
-          components: rustfmt, clippy
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Clippy check
-        run: cargo lint
-      - name: Format check
-        run: cargo format-check
