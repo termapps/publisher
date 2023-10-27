@@ -1,6 +1,7 @@
 use std::io::stdout;
 
 mod error;
+mod styles;
 
 mod hello;
 
@@ -14,6 +15,7 @@ use tracing_subscriber::prelude::*;
 /// A simple CLI application using clap
 #[derive(Debug, Parser)]
 #[clap(name = "cli-clap", version)]
+#[command(styles = styles::styles())]
 struct App {
     #[command(subcommand)]
     cmd: Subcommands,
