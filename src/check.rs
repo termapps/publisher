@@ -1,14 +1,14 @@
-use std::{collections::HashMap, io::Write};
+use std::collections::HashMap;
 
 use crate::{
-    error::Result,
+    error::{Error, Result},
+    publish::read_config,
     repositories::{build_config, Repositories},
 };
 
-use anstream::{print, println, stdout};
 use clap::Parser;
 use owo_colors::OwoColorize;
-use tracing::instrument;
+use tracing::{info, instrument};
 use xshell::{cmd, Shell};
 
 /// Check requirements for publishing to package repositories
@@ -22,41 +22,39 @@ impl Check {
     #[instrument(name = "check", skip_all)]
     pub fn run(self) -> Result {
         let repositories = build_config(&self.repositories);
+        let config = read_config()?;
+
         let mut check_results = CheckResults::default();
+
+        let mut failed = false;
 
         for repository in repositories {
             let name = repository.name();
 
-            print!("{} {} ... ", "checking".magenta(), name.yellow());
-            stdout().flush()?;
+            info!("{}", name.yellow());
 
             check_results.current = Some(name);
-            repository.check(&mut check_results)?;
+            repository.check(&mut check_results, &config)?;
 
-            if check_results.checked.values().all(Option::is_none) {
-                println!("{}", "pass".green());
-            } else {
-                println!("{}", "fail".red());
-
+            if !check_results.checked.values().all(Option::is_none) {
                 for check in &check_results.checks_per_repo[name] {
                     let check_result = check_results.checked[check];
 
-                    if check_result.is_some() {
-                        print!("  {}", "fail".red());
-                    } else {
-                        print!("  {}", "pass".green());
-                    }
-
-                    println!(" {}", check.yellow());
-
                     if let Some(msg) = check_result {
-                        println!("    {}", msg);
+                        failed = true;
+                        info!("  {} {} - {msg}", "fail".red(), check.yellow());
+                    } else {
+                        info!("  {} {}", "pass".green(), check.yellow());
                     }
                 }
             }
         }
 
-        Ok(())
+        if failed {
+            Err(Error::ChecksFailed)
+        } else {
+            Ok(())
+        }
     }
 }
 
@@ -68,7 +66,6 @@ pub struct CheckResults {
 }
 
 impl CheckResults {
-    #[instrument(skip(self))]
     pub fn has_checked(&mut self, name: &'static str) -> bool {
         let checked = self.checked.contains_key(name);
 
@@ -79,7 +76,6 @@ impl CheckResults {
         checked
     }
 
-    #[instrument(skip(self))]
     fn add_check_to_repo(&mut self, name: &'static str) {
         self.checks_per_repo
             .entry(self.current.unwrap())
@@ -87,14 +83,12 @@ impl CheckResults {
             .push(name);
     }
 
-    #[instrument(skip(self))]
     pub fn add_result(&mut self, name: &'static str, result: Option<&'static str>) {
         self.checked.insert(name, result);
         self.add_check_to_repo(name);
     }
 }
 
-#[instrument(skip_all)]
 pub fn check_git(sh: &Shell, results: &mut CheckResults) {
     if !results.has_checked(&"git") {
         let output = cmd!(sh, "git --version").quiet().ignore_status().read();
@@ -110,7 +104,6 @@ pub fn check_git(sh: &Shell, results: &mut CheckResults) {
     }
 }
 
-#[instrument(skip_all)]
 pub fn check_curl(sh: &Shell, results: &mut CheckResults) {
     if !results.has_checked(&"curl") {
         let output = cmd!(sh, "curl --version").quiet().ignore_status().read();

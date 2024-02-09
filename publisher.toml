@@ -1,6 +1,9 @@
 name = "publisher"
-description = "Tool to publish & distribute CLI tools"
-repository = "termapps/publisher"
-license = "MIT"
-homepage = "https://github.com/termapps/publisher"
 
+description = "Tool to publish & distribute CLI tools"
+homepage    = "https://github.com/termapps/publisher"
+license     = "MIT"
+repository  = "termapps/publisher"
+
+[homebrew]
+repository = "termapps/homebrew-tap"

@@ -1,29 +1,35 @@
-use std::{fmt::Write, fs::write};
-
 use heck::ToUpperCamelCase;
-use tracing::info;
-use xshell::{cmd, Shell};
+use xshell::Shell;
 
 use crate::{
     check::{check_curl, check_git, CheckResults},
-    error::Result,
-    publish::{commit_and_push, prepare_git_repo, PublishInfo},
+    error::{Error, Result},
+    publish::{commit_and_push, prepare_git_repo, write_and_add, PublishInfo},
     repositories::Repository,
 };
 
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct HomebrewInfo {
+    pub repository: String,
+}
+
 #[derive(Debug, Clone)]
-pub struct Homebrew;
+pub(super) struct Homebrew;
 
 impl Repository for Homebrew {
     fn name(&self) -> &'static str {
         "Homebrew"
     }
 
-    fn check(&self, results: &mut CheckResults) -> Result {
+    fn check(&self, results: &mut CheckResults, info: &PublishInfo) -> Result {
         let sh = Shell::new()?;
 
         check_git(&sh, results);
         check_curl(&sh, results);
+
+        if info.homebrew.is_none() {
+            results.add_result("config", Some("No configuration found for homebrew"));
+        }
 
         Ok(())
     }
@@ -36,26 +42,25 @@ impl Repository for Homebrew {
             ..
         } = &info;
 
-        // TODO: Remove this
-        println!("{:?}", info);
+        let homebrew = if let Some(homebrew) = &info.homebrew {
+            homebrew
+        } else {
+            return Err(Error::NoHomebrewConfig);
+        };
 
-        let (sh, dir) =
-            prepare_git_repo(self, &format!("git@github.com:{}", "termapps/homebrew-tap"))?;
+        let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{}", homebrew.repository))?;
 
-        info!("Writing formula");
-        let mut formula = String::new();
+        write_and_add(&sh, &dir, format!("Formula/{name}.rb"), || {
+            vec![
+                format!("class {} < Formula", name.to_upper_camel_case()),
+                format!("  version {version:?}"),
+                format!("  description {description:?}"),
+                format!("  homepage {homepage:?}"),
+                format!("end"),
+            ]
+        })?;
 
-        writeln!(formula, "class {} < Formula", name.to_upper_camel_case())?;
-        writeln!(formula, "  version {version:?}")?;
-        writeln!(formula, "  description {description:?}")?;
-        writeln!(formula, "  homepage {homepage:?}")?;
-        writeln!(formula, "end")?;
-
-        write(format!("{dir}/Formula/{name}.rb"), formula)?;
-
-        cmd!(sh, "git add Formula/{name}.rb").run()?;
-
-        commit_and_push(self, &sh, version)?;
+        commit_and_push(self, &sh, name, version)?;
 
         Ok(())
     }

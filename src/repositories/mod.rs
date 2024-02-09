@@ -1,5 +1,7 @@
-mod aur;
-mod homebrew;
+use std::fmt::Debug;
+
+pub mod aur;
+pub mod homebrew;
 
 use clap::ValueEnum;
 
@@ -8,7 +10,7 @@ use crate::{check::CheckResults, error::Result, publish::PublishInfo};
 pub trait Repository {
     fn name(&self) -> &'static str;
 
-    fn check(&self, check_result: &mut CheckResults) -> Result;
+    fn check(&self, check_result: &mut CheckResults, info: &PublishInfo) -> Result;
 
     fn publish(&self, info: &PublishInfo, version: &str) -> Result;
 }

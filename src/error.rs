@@ -9,6 +9,10 @@ use proc_exit::Code;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Some checks failed")]
+    ChecksFailed,
+    #[error("No configuration found for homebrew")]
+    NoHomebrewConfig,
     #[error("Unable to parse the configuration file: {0}")]
     Config(#[from] config::ConfigError),
     #[error("Unable to run a command: {0}")]

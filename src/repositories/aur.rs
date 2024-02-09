@@ -1,24 +1,21 @@
-use std::{fmt::Write, fs::write};
-
-use tracing::info;
 use xshell::{cmd, Shell};
 
 use crate::{
     check::{check_curl, check_git, CheckResults},
     error::Result,
-    publish::{commit_and_push, prepare_git_repo, PublishInfo},
+    publish::{commit_and_push, prepare_git_repo, write_and_add, PublishInfo},
     repositories::Repository,
 };
 
 #[derive(Debug, Clone)]
-pub struct Aur;
+pub(super) struct Aur;
 
 impl Repository for Aur {
     fn name(&self) -> &'static str {
         "AUR"
     }
 
-    fn check(&self, results: &mut CheckResults) -> Result {
+    fn check(&self, results: &mut CheckResults, _: &PublishInfo) -> Result {
         let sh = Shell::new()?;
 
         check_git(&sh, results);
@@ -65,68 +62,49 @@ impl Repository for Aur {
         )
         .read()?;
 
-        info!("Writing PKGBUILD");
-        let mut pkgbuild = String::new();
+        write_and_add(&sh, &dir, "PKGBUILD", || {
+            vec![
+                format!("pkgname={name}"),
+                format!("pkgdesc={description:?}"),
+                format!("pkgver={version}"),
+                format!("pkgrel=0"),
+                format!("url={homepage:?}"),
+                format!("arch=('x86_64' 'i686')"),
+                format!("license=({license:?})"),
+                format!("provides=({name:?})"),
+                format!("source_x86_64=({name}-{version}.zip::{download_url}-x86_64-unknown-linux-gnu.zip)"),
+                format!("source_i686=({name}-{version}.zip::{download_url}-i686-unknown-linux-gnu.zip)"),
+                format!("sha256sums_x86_64=({x86_64_checksum:?})"),
+                format!("sha256sums_i686=({i686_checksum:?})"),
+                format!(""),
+                format!("package() {{"),
+                format!("    install -Dm755 \"$srcdir/$pkgname\" \"$pkgdir/usr/bin/$pkgname\""),
+                format!("    install -Dm644 \"$srcdir/LICENSE\" \"$pkgdir/usr/share/licenses/$pkgname/LICENSE\""),
+                format!("}}"),
+            ]
+        })?;
 
-        writeln!(pkgbuild, "pkgname={name}")?;
-        writeln!(pkgbuild, "pkgdesc={description:?}")?;
-        writeln!(pkgbuild, "pkgver={version}")?;
-        writeln!(pkgbuild, "pkgrel=0")?;
-        writeln!(pkgbuild, "url={homepage:?}")?;
-        writeln!(pkgbuild, "arch=('x86_64' 'i686')")?;
-        writeln!(pkgbuild, "license=({license:?})")?;
-        writeln!(pkgbuild, "provides=({name:?})")?;
-        writeln!(
-            pkgbuild,
-            "source_x86_64=({name}-{version}.zip::{download_url}-x86_64-unknown-linux-gnu.zip)"
-        )?;
-        writeln!(
-            pkgbuild,
-            "source_i686=({name}-{version}.zip::{download_url}-i686-unknown-linux-gnu.zip)"
-        )?;
-        writeln!(pkgbuild, "sha256sums_x86_64=({x86_64_checksum:?})")?;
-        writeln!(pkgbuild, "sha256sums_i686=({i686_checksum:?})")?;
-        writeln!(pkgbuild, "")?;
-        writeln!(pkgbuild, "package() {{")?;
-        writeln!(
-            pkgbuild,
-            "    install -Dm755 \"$srcdir/$pkgname\" \"$pkgdir/usr/bin/$pkgname\""
-        )?;
-        writeln!(pkgbuild, "    install -Dm644 \"$srcdir/LICENSE\" \"$pkgdir/usr/share/licenses/$pkgname/LICENSE\"")?;
-        writeln!(pkgbuild, "}}")?;
+        write_and_add(&sh, &dir, ".SRCINFO", || {
+            vec![
+                format!("pkgbase = {name}"),
+                format!("\tpkgdesc = {description}"),
+                format!("\tpkgver = {version}"),
+                format!("\tpkgrel = 0"),
+                format!("\turl = {homepage}"),
+                format!("\tarch = x86_64"),
+                format!("\tarch = i686"),
+                format!("\tlicense = {license}"),
+                format!("\tprovides = {name}"),
+                format!("\tsource_x86_64 = {name}-{version}.zip::{download_url}-x86_64-unknown-linux-gnu.zip"),
+                format!("\tsha256sums_x86_64 = {x86_64_checksum}"),
+                format!("\tsource_i686 = {name}-{version}.zip::{download_url}-i686-unknown-linux-gnu.zip"),
+                format!("\tsha256sums_i686 = {i686_checksum}"),
+                format!(""),
+                format!("pkgname = {name}"),
+            ]
+        })?;
 
-        write(format!("{dir}/PKGBUILD"), pkgbuild)?;
-
-        info!("Writing SRCINFO");
-        let mut srcinfo = String::new();
-
-        writeln!(srcinfo, "pkgbase = {name}")?;
-        writeln!(srcinfo, "\tpkgdesc = {description}")?;
-        writeln!(srcinfo, "\tpkgver = {version}")?;
-        writeln!(srcinfo, "\tpkgrel = 0")?;
-        writeln!(srcinfo, "\turl = {homepage}")?;
-        writeln!(srcinfo, "\tarch = x86_64")?;
-        writeln!(srcinfo, "\tarch = i686")?;
-        writeln!(srcinfo, "\tlicense = {license}")?;
-        writeln!(srcinfo, "\tprovides = {name}")?;
-        writeln!(
-            srcinfo,
-            "\tsource_x86_64 = {name}-{version}.zip::{download_url}-x86_64-unknown-linux-gnu.zip"
-        )?;
-        writeln!(srcinfo, "\tsha256sums_x86_64 = {x86_64_checksum}")?;
-        writeln!(
-            srcinfo,
-            "\tsource_i686 = {name}-{version}.zip::{download_url}-i686-unknown-linux-gnu.zip"
-        )?;
-        writeln!(srcinfo, "\tsha256sums_i686 = {i686_checksum}")?;
-        writeln!(srcinfo, "")?;
-        writeln!(srcinfo, "pkgname = {name}")?;
-
-        write(format!("{dir}/.SRCINFO"), srcinfo)?;
-
-        cmd!(sh, "git add PKGBUILD .SRCINFO").run()?;
-
-        commit_and_push(self, &sh, version)?;
+        commit_and_push(self, &sh, name, version)?;
 
         Ok(())
     }
