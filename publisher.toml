@@ -1,6 +1,9 @@
 name = "cli-clap"
-description = "A simple CLI application using clap"
-repository = "termapps/cli-clap"
-license = "MIT"
-homepage = "https://github.com/termapps/cli-clap"
 
+description = "A simple CLI application using clap"
+homepage    = "https://github.com/termapps/cli-clap"
+license     = "MIT"
+repository  = "termapps/cli-clap"
+
+[homebrew]
+repository = "termapps/homebrew-tap"
