@@ -5,7 +5,8 @@ use crate::{
 
 use clap::Parser;
 use config::{Config, Environment, File, FileFormat};
-use tracing::info;
+use owo_colors::OwoColorize;
+use tracing::{info, instrument};
 use xshell::{cmd, Shell};
 
 /// Publish the tool to package repositories
@@ -28,6 +29,7 @@ pub struct PublishInfo {
 }
 
 impl Publish {
+    #[instrument(name = "publish", skip_all)]
     pub fn run(self) -> Result {
         let repositories = build_config(&self.repositories);
 
@@ -38,7 +40,7 @@ impl Publish {
             .try_deserialize::<PublishInfo>()?;
 
         for repository in repositories {
-            info!("Publishing to {}", repository.name());
+            info!("Publishing to {}", repository.name().yellow());
             repository.publish(&config, &self.version)?;
         }
 
