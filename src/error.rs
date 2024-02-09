@@ -1,4 +1,11 @@
-use std::{io, process::exit};
+use std::{
+    io::{Error as IoError, Write},
+    result::Result as StdResult,
+};
+
+use anstream::{eprintln, stderr, stdout};
+use owo_colors::OwoColorize;
+use proc_exit::Code;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -9,34 +16,31 @@ pub enum Error {
     #[error("{0}")]
     Fmt(#[from] std::fmt::Error),
     #[error("{0}")]
-    Io(#[from] io::Error),
+    Io(#[from] IoError),
 }
 
 impl Error {
-    fn print(self) -> io::Result<()> {
-        eprintln!("error: {self}");
-
-        Ok(())
+    fn print(&self) {
+        eprintln!("{}: {self}", "error".red().bold());
     }
 
-    fn code(&self) -> i32 {
-        1
+    fn code(&self) -> Code {
+        Code::FAILURE
     }
 }
 
-pub type Result<T = ()> = std::result::Result<T, Error>;
+pub type Result<T = ()> = StdResult<T, Error>;
 
 pub fn finish(result: Result) {
     let code = if let Some(e) = result.err() {
-        let code = e.code();
-
-        e.print().unwrap();
-        code
+        e.print();
+        e.code()
     } else {
-        0
+        Code::SUCCESS
     };
 
-    // TODO: Flush stdout and stderr
+    stdout().flush().unwrap();
+    stderr().flush().unwrap();
 
-    exit(code);
+    code.process_exit();
 }

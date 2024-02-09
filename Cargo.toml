@@ -8,19 +8,23 @@ homepage    = "https://github.com/termapps/publisher"
 repository  = "https://github.com/termapps/publisher"
 
 edition      = "2021"
-rust-version = "1.67.0"
+rust-version = "1.75.0"
 
 categories = ["command-line-utilities"]
 license    = "MIT"
 readme     = "README.md"
 
 [dependencies]
-clap                = { version = "~4.1.8", features = ["derive", "wrap_help"] }
-clap-verbosity-flag = "~2.0.0"
-concolor-clap       = { version = "=0.0.14", features = ["api_unstable"] }
-env_logger          = { version = "~0.10.0", default-features = false, features = ["auto-color", "color"] }
-log                 = "0.4.17"
-thiserror           = "~1.0.39"
+anstream            = "0.6.4"
+clap                = { version = "4.4.7", features = ["derive", "wrap_help"] }
+clap-verbosity-flag = "2.1.0"
+colorchoice-clap    = "1.0.3"
+owo-colors          = "3.5.0"
+proc-exit           = "2.0.1"
+thiserror           = "1.0.39"
+tracing             = "0.1.37"
+tracing-log         = { version = "0.1.3", default-features = false, features = ["log-tracer", "std"] }
+tracing-subscriber  = "0.3.16"
 
 config = { version = "0.13.3", default-features = false, features = ["toml"] }
 heck   = "0.4.1"
@@ -32,7 +36,15 @@ name = "publisher"
 path = "src/main.rs"
 
 [profile.release]
-lto = "thin"
+codegen-units = 1
+lto           = "thin"
+strip         = true
+
+[profile.release-opt-size]
+inherits  = "release"
+lto       = true
+opt-level = "z"
+panic     = "abort"
 
 [workspace.metadata.workspaces]
 no_individual_tags = true

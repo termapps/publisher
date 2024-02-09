@@ -1,26 +1,32 @@
+use std::io::stdout;
+
 mod repositories;
 
 mod error;
+mod styles;
 
 mod check;
 mod publish;
 
+use anstream::{AutoStream, ColorChoice};
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
-use concolor_clap::{color_choice, Color};
+use colorchoice_clap::Color;
+use tracing_log::AsTrace;
+use tracing_subscriber::prelude::*;
 
 /// Tool to publish & distribute CLI tools
 #[derive(Debug, Parser)]
 #[clap(name = "publisher", version)]
-#[clap(color = color_choice())]
+#[command(styles = styles::styles())]
 struct App {
-    #[clap(subcommand)]
+    #[command(subcommand)]
     cmd: Subcommands,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     color: Color,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     verbose: Verbosity<InfoLevel>,
 }
 
@@ -33,12 +39,16 @@ enum Subcommands {
 fn main() {
     let program = App::parse();
 
-    program.color.apply();
+    program.color.write_global();
 
-    env_logger::Builder::from_default_env()
-        .format_target(false)
-        .format_timestamp(None)
-        .filter_level(program.verbose.log_level_filter())
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::fmt::layer()
+                .without_time()
+                .with_target(false)
+                .with_ansi(!matches!(AutoStream::choice(&stdout()), ColorChoice::Never))
+                .with_filter(program.verbose.log_level_filter().as_trace()),
+        )
         .init();
 
     let result = match program.cmd {

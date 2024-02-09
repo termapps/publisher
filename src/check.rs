@@ -8,6 +8,7 @@ use crate::{
     repositories::{build_config, Repositories},
 };
 
+use anstream::println;
 use clap::Parser;
 use xshell::{cmd, Shell};
 

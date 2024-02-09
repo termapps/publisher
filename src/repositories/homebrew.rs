@@ -1,6 +1,7 @@
 use std::{fmt::Write, fs::write};
 
 use heck::ToUpperCamelCase;
+use tracing::info;
 use xshell::{cmd, Shell};
 
 use crate::{
@@ -41,7 +42,7 @@ impl Repository for Homebrew {
         let (sh, dir) =
             prepare_git_repo(self, &format!("git@github.com:{}", "termapps/homebrew-tap"))?;
 
-        log::info!("Writing formula");
+        info!("Writing formula");
         let mut formula = String::new();
 
         writeln!(formula, "class {} < Formula", name.to_upper_camel_case())?;

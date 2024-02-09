@@ -5,6 +5,7 @@ use crate::{
 
 use clap::Parser;
 use config::{Config, Environment, File, FileFormat};
+use tracing::info;
 use xshell::{cmd, Shell};
 
 /// Publish the tool to package repositories
@@ -37,7 +38,7 @@ impl Publish {
             .try_deserialize::<PublishInfo>()?;
 
         for repository in repositories {
-            log::info!("Publishing to {}", repository.name());
+            info!("Publishing to {}", repository.name());
             repository.publish(&config, &self.version)?;
         }
 

@@ -1,5 +1,6 @@
 use std::{fmt::Write, fs::write};
 
+use tracing::info;
 use xshell::{cmd, Shell};
 
 use crate::{
@@ -64,7 +65,7 @@ impl Repository for Aur {
         )
         .read()?;
 
-        log::info!("Writing PKGBUILD");
+        info!("Writing PKGBUILD");
         let mut pkgbuild = String::new();
 
         writeln!(pkgbuild, "pkgname={name}")?;
@@ -96,7 +97,7 @@ impl Repository for Aur {
 
         write(format!("{dir}/PKGBUILD"), pkgbuild)?;
 
-        log::info!("Writing SRCINFO");
+        info!("Writing SRCINFO");
         let mut srcinfo = String::new();
 
         writeln!(srcinfo, "pkgbase = {name}")?;
