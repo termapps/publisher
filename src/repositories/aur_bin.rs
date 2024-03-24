@@ -8,16 +8,16 @@ use crate::{
 };
 
 #[derive(Debug, Clone, serde::Deserialize)]
-pub struct AurInfo {
+pub struct AurBinInfo {
     pub repository: Option<String>,
 }
 
 #[derive(Debug, Clone)]
-pub(super) struct Aur;
+pub(super) struct AurBin;
 
-impl Repository for Aur {
+impl Repository for AurBin {
     fn name(&self) -> &'static str {
-        "AUR"
+        "AUR (bin)"
     }
 
     fn check(&self, results: &mut CheckResults, info: &PublishInfo) -> Result {
@@ -62,12 +62,19 @@ impl Repository for Aur {
         let name = get_name(&info);
         let (sh, dir) = prepare_git_repo(self, &format!("ssh://aur@aur.archlinux.org/{name}.git"))?;
 
-        let github_repo_name = repository.split('/').last().unwrap();
-        let download_url = format!("https://github.com/{repository}");
+        let download_url = format!(
+            "https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}"
+        );
 
-        let checksum = cmd!(
+        let x86_64_checksum = cmd!(
             sh,
-            "curl -L {download_url}/releases/download/v{version}/{cli_name}-v{version}_sha256sum.txt"
+            "curl -L {download_url}-x86_64-unknown-linux-gnu_sha256sum.txt"
+        )
+        .ignore_stderr()
+        .read()?;
+        let i686_checksum = cmd!(
+            sh,
+            "curl -L {download_url}-i686-unknown-linux-gnu_sha256sum.txt"
         )
         .ignore_stderr()
         .read()?;
@@ -75,25 +82,21 @@ impl Repository for Aur {
         write_and_add(&sh, &dir, "PKGBUILD", || {
             vec![
                 format!("pkgname={name}"),
-                format!("pkgdesc={description:?}"),
                 format!("pkgver={version}"),
                 format!("pkgrel=0"),
-                format!("url={homepage:?}"),
+                format!("pkgdesc={description:?}"),
                 format!("arch=('x86_64' 'i686')"),
+                format!("url={homepage:?}"),
                 format!("license=({license:?})"),
                 format!("provides=({cli_name:?})"),
-                format!("makedepends=('cargo')"),
-                format!("source=($pkgname-$pkgver.zip::{download_url}/archive/refs/tags/v$pkgver.zip)"),
-                format!("sha256sums=({checksum:?})"),
-                format!(""),
-                format!("build() {{"),
-                format!("    cd {github_repo_name}-$pkgver"),
-                format!("    cargo build --release --locked"),
-                format!("}}"),
+                format!("source_x86_64=($pkgname-$pkgver.zip::{download_url}-x86_64-unknown-linux-gnu.zip)"),
+                format!("source_i686=($pkgname-$pkgver.zip::{download_url}-i686-unknown-linux-gnu.zip)"),
+                format!("sha256sums_x86_64=({x86_64_checksum:?})"),
+                format!("sha256sums_i686=({i686_checksum:?})"),
                 format!(""),
                 format!("package() {{"),
-                format!("    install -Dm755 \"$srcdir/{github_repo_name}-$pkgver/target/release/{cli_name}\" \"$pkgdir/usr/bin/{cli_name}\""),
-                format!("    install -Dm644 \"$srcdir/{github_repo_name}-$pkgver/LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""),
+                format!("    install -Dm755 \"$srcdir/{cli_name}\" \"$pkgdir/usr/bin/{cli_name}\""),
+                format!("    install -Dm644 \"$srcdir/LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""),
                 format!("}}"),
             ]
         })?;
@@ -109,10 +112,10 @@ impl Repository for Aur {
                 format!("\tarch = i686"),
                 format!("\tlicense = {license}"),
                 format!("\tprovides = {cli_name}"),
-                format!(
-                    "\tsource = {name}-{version}.zip::{download_url}/archive/refs/tags/v{version}.zip"
-                ),
-                format!("\tsha256sums = {checksum}"),
+                format!("\tsource_x86_64 = {name}-{version}.zip::{download_url}-x86_64-unknown-linux-gnu.zip"),
+                format!("\tsha256sums_x86_64 = {x86_64_checksum}"),
+                format!("\tsource_i686 = {name}-{version}.zip::{download_url}-i686-unknown-linux-gnu.zip"),
+                format!("\tsha256sums_i686 = {i686_checksum}"),
                 format!(""),
                 format!("pkgname = {name}"),
             ]
@@ -125,8 +128,8 @@ impl Repository for Aur {
 }
 
 fn get_name(info: &PublishInfo) -> String {
-    info.aur
+    info.aur_bin
         .as_ref()
         .and_then(|info| info.repository.clone())
-        .unwrap_or_else(|| info.name.clone())
+        .unwrap_or_else(|| format!("{}-bin", info.name))
 }

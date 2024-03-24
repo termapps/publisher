@@ -2,7 +2,10 @@ use std::{fmt::Debug, fs::write};
 
 use crate::{
     error::Result,
-    repositories::{build_config, homebrew::HomebrewInfo, Repositories, Repository},
+    repositories::{
+        aur::AurInfo, aur_bin::AurBinInfo, build_config, homebrew::HomebrewInfo, Repositories,
+        Repository,
+    },
 };
 
 use clap::Parser;
@@ -29,6 +32,8 @@ pub struct PublishInfo {
     pub license: String,
     pub homepage: String,
     pub exclude: Option<Vec<String>>,
+    pub aur: Option<AurInfo>,
+    pub aur_bin: Option<AurBinInfo>,
     pub homebrew: Option<HomebrewInfo>,
 }
 
@@ -59,11 +64,9 @@ pub fn read_config() -> Result<PublishInfo> {
         .try_deserialize::<PublishInfo>()?)
 }
 
-pub fn prepare_tmp_dir(repository: &dyn Repository) -> Result<(Shell, String)> {
+pub fn prepare_tmp_dir(id: &str) -> Result<(Shell, String)> {
     let sh = Shell::new()?;
-
-    let name = repository.name();
-    let dir = format!("/tmp/publisher/{name}");
+    let dir = format!("/tmp/publisher/{id}");
 
     cmd!(sh, "rm -rf {dir}").quiet().run()?;
     cmd!(sh, "mkdir -p {dir}").quiet().run()?;
@@ -74,18 +77,17 @@ pub fn prepare_tmp_dir(repository: &dyn Repository) -> Result<(Shell, String)> {
 }
 
 pub fn prepare_git_repo(repository: &dyn Repository, remote: &str) -> Result<(Shell, String)> {
-    let (sh, dir) = prepare_tmp_dir(repository)?;
-
-    let name = repository.name();
+    let id = repository.name();
+    let (sh, dir) = prepare_tmp_dir(id)?;
 
     cmd!(sh, "git init").quiet().ignore_stdout().run()?;
-    cmd!(sh, "git remote add {name} {remote}")
+    cmd!(sh, "git remote add origin {remote}")
         .quiet()
         .ignore_stdout()
         .run()?;
-    cmd!(sh, "git fetch {name}").quiet().ignore_stderr().run()?;
+    cmd!(sh, "git fetch origin").quiet().ignore_stderr().run()?;
 
-    if let Ok(_) = cmd!(sh, "git ls-remote --exit-code --heads {name} master")
+    if let Ok(_) = cmd!(sh, "git ls-remote --exit-code --heads origin master")
         .quiet()
         .ignore_stdout()
         .run()
@@ -110,26 +112,20 @@ where
     info!("  {} {}", "writing".magenta(), path.yellow());
     let lines = writer();
 
-    write(format!("{dir}/{path}"), lines.join("\n"))?;
+    write(format!("{dir}/{path}"), format!("{}\n", lines.join("\n")))?;
     cmd!(sh, "git add {path}").quiet().run()?;
 
     Ok(())
 }
 
-pub fn commit_and_push(
-    repository: &dyn Repository,
-    sh: &Shell,
-    name: &str,
-    version: &str,
-) -> Result {
-    let remote = repository.name();
+pub fn commit_and_push(sh: &Shell, name: &str, version: &str) -> Result {
     let message = format!("{name}: {version}");
 
     cmd!(sh, "git commit -m {message}")
         .quiet()
         .ignore_stdout()
         .run()?;
-    cmd!(sh, "git push {remote} master")
+    cmd!(sh, "git push origin master")
         .quiet()
         .ignore_stderr()
         .run()?;

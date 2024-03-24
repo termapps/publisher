@@ -23,7 +23,7 @@ jobs:
     name: Read version
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.VERSION }}
+      source_name: ${{ env.NAME }}-${{ steps.version.outputs.VERSION }}
     steps:
       - name: Read version
         id: version
@@ -31,6 +31,25 @@ jobs:
           REF: ${{ github.ref }}
         shell: bash
         run: echo "VERSION=${REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+  source-checksum-upload:
+    name: Source checksum upload
+    needs: [create-release, read-version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Calculate checksum
+        shell: bash
+        run: |
+          curl -sL ${{ github.event.repository.html_url }}/archive/${{ github.ref }}.zip > upload.zip
+          echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt
+      - name: Upload checksums
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./sha256sum.txt
+          asset_name: ${{ needs.read-version.outputs.source_name }}_sha256sum.txt
+          asset_content_type: text/plain
   build-upload:
     name: Build & Upload
     needs: [create-release, read-version]
@@ -68,7 +87,7 @@ jobs:
       - name: Set variables
         id: vars
         env:
-          BUILD_NAME: ${{ env.NAME }}-${{ needs.read-version.outputs.version }}-${{ matrix.target }}
+          BUILD_NAME: ${{ needs.read-version.outputs.source_name }}-${{ matrix.target }}
         shell: bash
         run: echo "BUILD_NAME=$BUILD_NAME" >> $GITHUB_OUTPUT
       - name: Ready artifacts

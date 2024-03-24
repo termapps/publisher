@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 
 pub mod aur;
+pub mod aur_bin;
 pub mod homebrew;
 
 use clap::ValueEnum;
@@ -17,6 +18,7 @@ pub trait Repository {
 
 #[derive(Debug, Clone, ValueEnum)]
 pub enum Repositories {
+    AurBin,
     Aur,
     Homebrew,
 }
@@ -24,6 +26,7 @@ pub enum Repositories {
 impl Repositories {
     fn build_config(&self) -> Box<dyn Repository> {
         match self {
+            Repositories::AurBin => Box::new(aur_bin::AurBin),
             Repositories::Aur => Box::new(aur::Aur),
             Repositories::Homebrew => Box::new(homebrew::Homebrew),
         }

@@ -125,3 +125,63 @@ pub fn check_curl(sh: &Shell, results: &mut CheckResults) {
         );
     }
 }
+
+pub fn check_repo(sh: &Shell, remote: &str, branch: &str, results: &mut CheckResults) -> Result {
+    if results
+        .checked
+        .get("git")
+        .is_some_and(|check| check.is_some())
+    {
+        results.add_result("repo", Some("git is not installed"));
+        return Ok(());
+    }
+
+    if cmd!(sh, "git ls-remote --exit-code {remote}")
+        .quiet()
+        .read()
+        .is_err()
+    {
+        results.add_result("repo", Some("repository not found"));
+        return Ok(());
+    }
+
+    if cmd!(sh, "git ls-remote --exit-code --heads {remote} {branch}")
+        .quiet()
+        .read()
+        .is_err()
+    {
+        results.add_result("repo", Some("repository branch does not exist"));
+        return Ok(());
+    }
+
+    let dir = "/tmp/publisher-check";
+
+    if cmd!(sh, "git clone {remote} {dir}")
+        .quiet()
+        .read_stderr()
+        .is_err()
+    {
+        results.add_result("repo", Some("read access to the repository not configured"));
+        return Ok(());
+    }
+
+    sh.change_dir(dir);
+
+    let push_result = cmd!(sh, "git push")
+        .quiet()
+        .ignore_status()
+        .read_stderr()
+        .unwrap_or_else(|_| "permission denied".into());
+
+    sh.change_dir("..");
+    cmd!(sh, "rm -rf {dir}").quiet().run()?;
+
+    if push_result.contains("permission denied") {
+        results.add_result(
+            "repo",
+            Some("write access to the repository not configured"),
+        );
+    }
+
+    Ok(())
+}

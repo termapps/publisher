@@ -56,7 +56,7 @@ impl Repository for Homebrew {
             ]
         })?;
 
-        commit_and_push(self, &sh, name, version)?;
+        commit_and_push(&sh, name, version)?;
 
         Ok(())
     }
