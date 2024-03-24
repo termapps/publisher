@@ -28,15 +28,19 @@ pub struct PublishInfo {
     pub repository: String,
     pub license: String,
     pub homepage: String,
+    pub exclude: Option<Vec<String>>,
     pub homebrew: Option<HomebrewInfo>,
 }
 
 impl Publish {
     #[instrument(name = "publish", skip_all)]
     pub fn run(self) -> Result {
-        let repositories = build_config(&self.repositories);
-
         let config = read_config()?;
+
+        let repositories = build_config(
+            &self.repositories,
+            config.exclude.as_deref().unwrap_or_default(),
+        );
 
         for repository in repositories {
             info!("{}", repository.name().yellow());
@@ -112,7 +116,6 @@ where
     Ok(())
 }
 
-// TODO: Add name to this
 pub fn commit_and_push(
     repository: &dyn Repository,
     sh: &Shell,

@@ -30,12 +30,18 @@ impl Repositories {
     }
 }
 
-pub fn build_config(repositories: &[Repositories]) -> Vec<Box<dyn Repository>> {
-    if !repositories.is_empty() {
+pub fn build_config(repositories: &[Repositories], exclude: &[String]) -> Vec<Box<dyn Repository>> {
+    let repos = if !repositories.is_empty() {
         repositories.iter()
     } else {
         Repositories::value_variants().iter()
-    }
-    .map(Repositories::build_config)
-    .collect()
+    };
+
+    repos
+        .filter(|r| {
+            let v = r.to_possible_value().unwrap();
+            !exclude.iter().any(|e| v.matches(e, true))
+        })
+        .map(Repositories::build_config)
+        .collect()
 }

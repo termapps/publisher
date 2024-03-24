@@ -21,8 +21,12 @@ pub struct Check {
 impl Check {
     #[instrument(name = "check", skip_all)]
     pub fn run(self) -> Result {
-        let repositories = build_config(&self.repositories);
         let config = read_config()?;
+
+        let repositories = build_config(
+            &self.repositories,
+            config.exclude.as_deref().unwrap_or_default(),
+        );
 
         let mut check_results = CheckResults::default();
 
@@ -36,7 +40,10 @@ impl Check {
             check_results.current = Some(name);
             repository.check(&mut check_results, &config)?;
 
-            if !check_results.checked.values().all(Option::is_none) {
+            if !check_results.checks_per_repo[name]
+                .iter()
+                .all(|&check| check_results.checked[check].is_none())
+            {
                 for check in &check_results.checks_per_repo[name] {
                     let check_result = check_results.checked[check];
 

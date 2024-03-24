@@ -42,11 +42,7 @@ impl Repository for Homebrew {
             ..
         } = &info;
 
-        let homebrew = if let Some(homebrew) = &info.homebrew {
-            homebrew
-        } else {
-            return Err(Error::NoHomebrewConfig);
-        };
+        let homebrew = info.homebrew.as_ref().ok_or(Error::NoHomebrewConfig)?;
 
         let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{}", homebrew.repository))?;
 
