@@ -4,6 +4,9 @@ on:
     tags: [v*]
 env:
   NAME: ${{ github.event.repository.name }}
+defaults:
+  run:
+    shell: bash
 jobs:
   create-release:
     name: Create release
@@ -23,14 +26,31 @@ jobs:
     name: Read version
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.VERSION }}
+      source_name: ${{ env.NAME }}-${{ steps.version.outputs.VERSION }}
     steps:
       - name: Read version
         id: version
         env:
           REF: ${{ github.ref }}
-        shell: bash
         run: echo "VERSION=${REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+  source-checksum-upload:
+    name: Source checksum upload
+    needs: [create-release, read-version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Calculate checksum
+        run: |
+          curl -sL ${{ github.event.repository.html_url }}/archive/${{ github.ref }}.zip > upload.zip
+          echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt
+      - name: Upload checksums
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./sha256sum.txt
+          asset_name: ${{ needs.read-version.outputs.source_name }}_sha256sum.txt
+          asset_content_type: text/plain
   build-upload:
     name: Build & Upload
     needs: [create-release, read-version]
@@ -40,14 +60,16 @@ jobs:
         include:
           - os: macos-latest
             target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
           - os: ubuntu-latest
             target: i686-unknown-linux-gnu
           - os: windows-latest
-            target: i686-pc-windows-msvc
-          - os: windows-latest
             target: x86_64-pc-windows-msvc
+          - os: windows-latest
+            target: i686-pc-windows-msvc
           # - i686-pc-windows-gnu
           # - x86_64-pc-windows-gnu
     runs-on: ${{ matrix.os }}
@@ -68,11 +90,9 @@ jobs:
       - name: Set variables
         id: vars
         env:
-          BUILD_NAME: ${{ env.NAME }}-${{ needs.read-version.outputs.version }}-${{ matrix.target }}
-        shell: bash
+          BUILD_NAME: ${{ needs.read-version.outputs.source_name }}-${{ matrix.target }}
         run: echo "BUILD_NAME=$BUILD_NAME" >> $GITHUB_OUTPUT
       - name: Ready artifacts
-        shell: bash
         run: |
           mkdir upload
           cp target/${{ matrix.target }}/release/$NAME LICENSE upload
@@ -92,9 +112,11 @@ jobs:
           asset_name: ${{ steps.vars.outputs.BUILD_NAME }}.zip
           asset_content_type: application/zip
       - name: Calculate checksum
-        shell: bash
-        run: |
-          echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt
+        if: runner.os == 'macOS'
+        run: echo $(shasum -a 256 upload.zip | cut -d ' ' -f 1) > sha256sum.txt
+      - name: Calculate checksum
+        if: runner.os != 'macOS'
+        run: echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt
       - name: Upload checksums
         uses: actions/upload-release-asset@v1
         env:

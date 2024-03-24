@@ -5,5 +5,13 @@ homepage    = "https://github.com/termapps/cli-clap"
 license     = "MIT"
 repository  = "termapps/cli-clap"
 
+exclude = ["aur"]
+
+[aur_bin]
+name = "cli-clap"
+
 [homebrew]
 repository = "termapps/homebrew-tap"
+
+[scoop]
+repository = "termapps/scoop-bucket"
