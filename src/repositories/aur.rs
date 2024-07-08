@@ -95,11 +95,11 @@ impl Repository for Aur {
         write_and_add(&sh, &dir, "PKGBUILD", || {
             vec![
                 format!("pkgname={name}"),
-                format!("pkgdesc={description:?}"),
                 format!("pkgver={version}"),
                 format!("pkgrel=0"),
-                format!("url={homepage:?}"),
+                format!("pkgdesc={description:?}"),
                 format!("arch=('x86_64' 'i686')"),
+                format!("url={homepage:?}"),
                 format!("license=({license:?})"),
                 format!("provides=({cli_name:?})"),
                 format!("conflicts=({conflicts_pkgbuild})"),
@@ -108,13 +108,14 @@ impl Repository for Aur {
                 format!("sha256sums=({checksum:?})"),
                 format!(""),
                 format!("build() {{"),
-                format!("    cd {github_repo_name}-$pkgver"),
+                format!("    cd \"$srcdir/{github_repo_name}-$pkgver\""),
                 format!("    cargo build --release --locked"),
                 format!("}}"),
                 format!(""),
                 format!("package() {{"),
-                format!("    install -Dm755 \"$srcdir/{github_repo_name}-$pkgver/target/release/{cli_name}\" \"$pkgdir/usr/bin/{cli_name}\""),
-                format!("    install -Dm644 \"$srcdir/{github_repo_name}-$pkgver/LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""),
+                format!("    cd \"$srcdir/{github_repo_name}-$pkgver\""),
+                format!("    install -Dm755 \"target/release/{cli_name}\" \"$pkgdir/usr/bin/{cli_name}\""),
+                format!("    install -Dm644 \"LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""),
                 format!("}}"),
             ]
         })?;
@@ -122,9 +123,9 @@ impl Repository for Aur {
         write_and_add(&sh, &dir, ".SRCINFO", || {
             vec![
                 format!("pkgbase = {name}"),
-                format!("\tpkgdesc = {description}"),
                 format!("\tpkgver = {version}"),
                 format!("\tpkgrel = 0"),
+                format!("\tpkgdesc = {description}"),
                 format!("\turl = {homepage}"),
                 format!("\tarch = x86_64"),
                 format!("\tarch = i686"),

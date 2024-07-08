@@ -116,8 +116,9 @@ impl Repository for AurBin {
                 format!("sha256sums_i686=({i686_checksum:?})"),
                 format!(""),
                 format!("package() {{"),
-                format!("    install -Dm755 \"$srcdir/{cli_name}\" \"$pkgdir/usr/bin/{cli_name}\""),
-                format!("    install -Dm644 \"$srcdir/LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""),
+                format!("    cd \"$srcdir\""),
+                format!("    install -Dm755 \"{cli_name}\" \"$pkgdir/usr/bin/{cli_name}\""),
+                format!("    install -Dm644 \"LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""),
                 format!("}}"),
             ]
         })?;
@@ -125,9 +126,9 @@ impl Repository for AurBin {
         write_and_add(&sh, &dir, ".SRCINFO", || {
             vec![
                 format!("pkgbase = {name}"),
-                format!("\tpkgdesc = {description}"),
                 format!("\tpkgver = {version}"),
                 format!("\tpkgrel = 0"),
+                format!("\tpkgdesc = {description}"),
                 format!("\turl = {homepage}"),
                 format!("\tarch = x86_64"),
                 format!("\tarch = i686"),
