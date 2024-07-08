@@ -20,6 +20,7 @@
 2. [Usage](#usage)
 3. [Changelog](#changelog)
 
+<!-- publisher install start -->
 ## Install
 
 `publisher` is available on Linux, macOS
@@ -45,6 +46,7 @@ Pre-built binary executables are available at [releases page](https://github.com
 
 Download and unarchive the binary then put the executable in `$PATH`.
 
+<!-- publisher install end -->
 ## Usage
 
 <!-- omit from toc -->

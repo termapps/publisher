@@ -5,7 +5,8 @@ homepage    = "https://github.com/termapps/publisher"
 license     = "MIT"
 repository  = "termapps/publisher"
 
-exclude = ["aur"]
+[aur]
+repository = "publisher-git"
 
 [aur_bin]
 repository = "publisher"

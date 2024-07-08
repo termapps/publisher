@@ -2,9 +2,9 @@ use std::{fmt::Debug, fs::write};
 
 use crate::{
     error::Result,
+    init::CONFIG_FILE,
     repositories::{
-        aur::AurInfo, aur_bin::AurBinInfo, build_config, homebrew::HomebrewInfo, Repositories,
-        Repository,
+        aur::AurInfo, aur_bin::AurBinInfo, build, homebrew::HomebrewInfo, Repositories, Repository,
     },
 };
 
@@ -42,7 +42,7 @@ impl Publish {
     pub fn run(self) -> Result {
         let config = read_config()?;
 
-        let repositories = build_config(
+        let repositories = build(
             &self.repositories,
             config.exclude.as_deref().unwrap_or_default(),
         );
@@ -59,7 +59,7 @@ impl Publish {
 pub fn read_config() -> Result<PublishInfo> {
     Ok(Config::builder()
         .add_source(Environment::with_prefix("PUBLISHER").separator("_"))
-        .add_source(File::new("publisher.toml", FileFormat::Toml))
+        .add_source(File::new(CONFIG_FILE, FileFormat::Toml))
         .build()?
         .try_deserialize::<PublishInfo>()?)
 }

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::{
     error::{Error, Result},
     publish::read_config,
-    repositories::{build_config, Repositories},
+    repositories::{build, Repositories},
 };
 
 use clap::Parser;
@@ -23,7 +23,7 @@ impl Check {
     pub fn run(self) -> Result {
         let config = read_config()?;
 
-        let repositories = build_config(
+        let repositories = build(
             &self.repositories,
             config.exclude.as_deref().unwrap_or_default(),
         );

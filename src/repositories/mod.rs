@@ -24,7 +24,7 @@ pub enum Repositories {
 }
 
 impl Repositories {
-    fn build_config(&self) -> Box<dyn Repository> {
+    fn build(&self) -> Box<dyn Repository> {
         match self {
             Repositories::AurBin => Box::new(aur_bin::AurBin),
             Repositories::Aur => Box::new(aur::Aur),
@@ -33,7 +33,7 @@ impl Repositories {
     }
 }
 
-pub fn build_config(repositories: &[Repositories], exclude: &[String]) -> Vec<Box<dyn Repository>> {
+pub fn build(repositories: &[Repositories], exclude: &[String]) -> Vec<Box<dyn Repository>> {
     let repos = if !repositories.is_empty() {
         repositories.iter()
     } else {
@@ -45,6 +45,6 @@ pub fn build_config(repositories: &[Repositories], exclude: &[String]) -> Vec<Bo
             let v = r.to_possible_value().unwrap();
             !exclude.iter().any(|e| v.matches(e, true))
         })
-        .map(Repositories::build_config)
+        .map(Repositories::build)
         .collect()
 }
