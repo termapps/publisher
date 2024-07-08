@@ -4,7 +4,8 @@ use crate::{
     error::Result,
     init::CONFIG_FILE,
     repositories::{
-        aur::AurInfo, aur_bin::AurBinInfo, build, homebrew::HomebrewInfo, Repositories, Repository,
+        aur::AurInfo, aur_bin::AurBinInfo, build, homebrew::HomebrewInfo, update_conflicts,
+        Repositories, Repository,
     },
 };
 
@@ -44,12 +45,13 @@ pub struct PublishInfo {
 impl Publish {
     #[instrument(name = "publish", skip_all)]
     pub fn run(self) -> Result {
-        let config = read_config()?;
+        let mut config = read_config()?;
+        let exclude = config.exclude.clone().unwrap_or_default();
 
-        let repositories = build(
-            &self.repositories,
-            config.exclude.as_deref().unwrap_or_default(),
-        );
+        // We need to update config depending on what user has provided
+        update_conflicts(&self.repositories, &exclude, &mut config);
+
+        let repositories = build(&self.repositories, &exclude);
 
         for repository in repositories {
             info!("{}", repository.name().blue());

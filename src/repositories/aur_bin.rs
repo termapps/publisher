@@ -7,9 +7,10 @@ use crate::{
     repositories::Repository,
 };
 
-#[derive(Debug, Clone, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Deserialize)]
 pub struct AurBinInfo {
     pub repository: Option<String>,
+    pub conflicts: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone)]
@@ -80,6 +81,24 @@ impl Repository for AurBin {
         .ignore_stderr()
         .read()?;
 
+        let conflicts = info
+            .aur_bin
+            .as_ref()
+            .and_then(|info| info.conflicts.clone())
+            .unwrap_or_default();
+
+        let conflicts_pkgbuild = conflicts
+            .iter()
+            .map(|c| format!("{c:?}"))
+            .collect::<Vec<String>>()
+            .join(" ");
+
+        let conflicts_srcinfo = conflicts
+            .iter()
+            .map(|c| format!("\tconflicts = {c}"))
+            .collect::<Vec<String>>()
+            .join("\n");
+
         write_and_add(&sh, &dir, "PKGBUILD", || {
             vec![
                 format!("pkgname={name}"),
@@ -90,6 +109,7 @@ impl Repository for AurBin {
                 format!("url={homepage:?}"),
                 format!("license=({license:?})"),
                 format!("provides=({cli_name:?})"),
+                format!("conflicts=({conflicts_pkgbuild})"),
                 format!("source_x86_64=($pkgname-$pkgver.zip::{download_url}-x86_64-unknown-linux-gnu.zip)"),
                 format!("source_i686=($pkgname-$pkgver.zip::{download_url}-i686-unknown-linux-gnu.zip)"),
                 format!("sha256sums_x86_64=({x86_64_checksum:?})"),
@@ -113,6 +133,7 @@ impl Repository for AurBin {
                 format!("\tarch = i686"),
                 format!("\tlicense = {license}"),
                 format!("\tprovides = {cli_name}"),
+                conflicts_srcinfo,
                 format!("\tsource_x86_64 = {name}-{version}.zip::{download_url}-x86_64-unknown-linux-gnu.zip"),
                 format!("\tsha256sums_x86_64 = {x86_64_checksum}"),
                 format!("\tsource_i686 = {name}-{version}.zip::{download_url}-i686-unknown-linux-gnu.zip"),
@@ -130,7 +151,7 @@ impl Repository for AurBin {
     }
 }
 
-fn get_name(info: &PublishInfo) -> String {
+pub fn get_name(info: &PublishInfo) -> String {
     info.aur_bin
         .as_ref()
         .and_then(|info| info.repository.clone())

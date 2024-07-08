@@ -8,7 +8,7 @@ use crate::{
     repositories::Repository,
 };
 
-#[derive(Debug, Clone, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Deserialize)]
 pub struct HomebrewInfo {
     pub repository: String,
 }

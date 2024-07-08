@@ -7,9 +7,10 @@ use crate::{
     repositories::Repository,
 };
 
-#[derive(Debug, Clone, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Deserialize)]
 pub struct AurInfo {
     pub repository: Option<String>,
+    pub conflicts: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone)]
@@ -73,6 +74,24 @@ impl Repository for Aur {
         .ignore_stderr()
         .read()?;
 
+        let conflicts = info
+            .aur
+            .as_ref()
+            .and_then(|info| info.conflicts.clone())
+            .unwrap_or_default();
+
+        let conflicts_pkgbuild = conflicts
+            .iter()
+            .map(|c| format!("{c:?}"))
+            .collect::<Vec<String>>()
+            .join(" ");
+
+        let conflicts_srcinfo = conflicts
+            .iter()
+            .map(|c| format!("\tconflicts = {c}"))
+            .collect::<Vec<String>>()
+            .join("\n");
+
         write_and_add(&sh, &dir, "PKGBUILD", || {
             vec![
                 format!("pkgname={name}"),
@@ -83,6 +102,7 @@ impl Repository for Aur {
                 format!("arch=('x86_64' 'i686')"),
                 format!("license=({license:?})"),
                 format!("provides=({cli_name:?})"),
+                format!("conflicts=({conflicts_pkgbuild})"),
                 format!("makedepends=('cargo')"),
                 format!("source=($pkgname-$pkgver.zip::{download_url}/archive/refs/tags/v$pkgver.zip)"),
                 format!("sha256sums=({checksum:?})"),
@@ -110,6 +130,7 @@ impl Repository for Aur {
                 format!("\tarch = i686"),
                 format!("\tlicense = {license}"),
                 format!("\tprovides = {cli_name}"),
+                conflicts_srcinfo,
                 format!(
                     "\tsource = {name}-{version}.zip::{download_url}/archive/refs/tags/v{version}.zip"
                 ),
@@ -127,7 +148,7 @@ impl Repository for Aur {
     }
 }
 
-fn get_name(info: &PublishInfo) -> String {
+pub fn get_name(info: &PublishInfo) -> String {
     info.aur
         .as_ref()
         .and_then(|info| info.repository.clone())
