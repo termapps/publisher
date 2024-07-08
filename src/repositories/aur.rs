@@ -44,6 +44,7 @@ impl Repository for Aur {
             &format!("ssh://aur@aur.archlinux.org/{name}.git"),
             "master",
             results,
+            true,
         )?;
 
         Ok(())

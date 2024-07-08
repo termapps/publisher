@@ -52,13 +52,13 @@ impl Publish {
         );
 
         for repository in repositories {
-            info!("{}", repository.name().yellow());
+            info!("{}", repository.name().blue());
             repository.publish(&config, &self.version, !self.yes)?;
         }
 
         warn!(
             "{}",
-            "Not published because dry-run mode was enabled".cyan()
+            "Not published because dry-run mode was enabled".yellow()
         );
 
         Ok(())
@@ -118,7 +118,7 @@ where
 {
     let path = path.as_ref();
 
-    info!("  {} {}", "writing".magenta(), path.yellow());
+    info!("  {} {}", "writing".magenta(), path.cyan());
     let lines = writer();
 
     write(format!("{dir}/{path}"), format!("{}\n", lines.join("\n")))?;

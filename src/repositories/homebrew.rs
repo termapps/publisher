@@ -2,7 +2,7 @@ use heck::ToUpperCamelCase;
 use xshell::Shell;
 
 use crate::{
-    check::{check_curl, check_git, CheckResults},
+    check::{check_curl, check_git, check_repo, CheckResults},
     error::{Error, Result},
     publish::{commit_and_push, prepare_git_repo, write_and_add, PublishInfo},
     repositories::Repository,
@@ -28,6 +28,20 @@ impl Repository for Homebrew {
         check_curl(&sh, results);
 
         if info.homebrew.is_none() {
+            results.add_result("config", Some("No configuration found for homebrew"));
+        }
+
+        if let Some(homebrew) = &info.homebrew {
+            let repository = &homebrew.repository;
+
+            check_repo(
+                &sh,
+                &format!("git@github.com:{repository}"),
+                "master",
+                results,
+                false,
+            )?;
+        } else {
             results.add_result("config", Some("No configuration found for homebrew"));
         }
 

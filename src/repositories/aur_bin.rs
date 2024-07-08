@@ -44,6 +44,7 @@ impl Repository for AurBin {
             &format!("ssh://aur@aur.archlinux.org/{name}.git"),
             "master",
             results,
+            true,
         )?;
 
         Ok(())
