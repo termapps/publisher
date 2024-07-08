@@ -34,7 +34,7 @@ impl Repository for Homebrew {
         Ok(())
     }
 
-    fn publish(&self, info: &PublishInfo, version: &str) -> Result {
+    fn publish(&self, info: &PublishInfo, version: &str, dry_run: bool) -> Result {
         let PublishInfo {
             name,
             description,
@@ -56,7 +56,9 @@ impl Repository for Homebrew {
             ]
         })?;
 
-        commit_and_push(&sh, name, version)?;
+        if !dry_run {
+            commit_and_push(&sh, name, version)?;
+        }
 
         Ok(())
     }

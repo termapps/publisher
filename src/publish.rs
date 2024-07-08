@@ -11,7 +11,7 @@ use crate::{
 use clap::Parser;
 use config::{Config, Environment, File, FileFormat};
 use owo_colors::OwoColorize;
-use tracing::{info, instrument};
+use tracing::{info, instrument, warn};
 use xshell::{cmd, Shell};
 
 /// Publish the tool to package repositories
@@ -22,6 +22,10 @@ pub struct Publish {
 
     /// The name(s) of the package repository
     repositories: Vec<Repositories>,
+
+    /// Confirm the publish action
+    #[clap(long)]
+    yes: bool,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -49,8 +53,13 @@ impl Publish {
 
         for repository in repositories {
             info!("{}", repository.name().yellow());
-            repository.publish(&config, &self.version)?;
+            repository.publish(&config, &self.version, !self.yes)?;
         }
+
+        warn!(
+            "{}",
+            "Not published because dry-run mode was enabled".cyan()
+        );
 
         Ok(())
     }

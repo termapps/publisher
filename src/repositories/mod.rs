@@ -13,7 +13,7 @@ pub trait Repository {
 
     fn check(&self, check_result: &mut CheckResults, info: &PublishInfo) -> Result;
 
-    fn publish(&self, info: &PublishInfo, version: &str) -> Result;
+    fn publish(&self, info: &PublishInfo, version: &str, dry_run: bool) -> Result;
 }
 
 #[derive(Debug, Clone, ValueEnum)]
