@@ -4,6 +4,9 @@ on:
     tags: [v*]
 env:
   NAME: ${{ github.event.repository.name }}
+defaults:
+  run:
+    shell: bash
 jobs:
   create-release:
     name: Create release
@@ -29,7 +32,6 @@ jobs:
         id: version
         env:
           REF: ${{ github.ref }}
-        shell: bash
         run: echo "VERSION=${REF/refs\/tags\//}" >> $GITHUB_OUTPUT
   source-checksum-upload:
     name: Source checksum upload
@@ -37,7 +39,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Calculate checksum
-        shell: bash
         run: |
           curl -sL ${{ github.event.repository.html_url }}/archive/${{ github.ref }}.zip > upload.zip
           echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt
@@ -90,10 +91,8 @@ jobs:
         id: vars
         env:
           BUILD_NAME: ${{ needs.read-version.outputs.source_name }}-${{ matrix.target }}
-        shell: bash
         run: echo "BUILD_NAME=$BUILD_NAME" >> $GITHUB_OUTPUT
       - name: Ready artifacts
-        shell: bash
         run: |
           mkdir upload
           cp target/${{ matrix.target }}/release/$NAME LICENSE upload
@@ -113,14 +112,11 @@ jobs:
           asset_name: ${{ steps.vars.outputs.BUILD_NAME }}.zip
           asset_content_type: application/zip
       - name: Calculate checksum
-        shell: bash
-        run: |
-          if sha256sum -v &> /dev/null; then
-            sha=$(sha256sum upload.zip)
-          else
-            sha=$(shasum -a 256 upload.zip)
-          fi
-          echo $(echo $sha | cut -d ' ' -f 1) > sha256sum.txt
+        if: runner.os == 'macOS'
+        run: echo $(shasum -a 256 upload.zip | cut -d ' ' -f 1) > sha256sum.txt
+      - name: Calculate checksum
+        if: runner.os != 'macOS'
+        run: echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt
       - name: Upload checksums
         uses: actions/upload-release-asset@v1
         env:
