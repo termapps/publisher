@@ -60,9 +60,9 @@ impl Repository for AurBin {
             license,
             repository,
             ..
-        } = &info;
+        } = info;
 
-        let name = get_name(&info);
+        let name = get_name(info);
         let (sh, dir) = prepare_git_repo(self, &format!("ssh://aur@aur.archlinux.org/{name}.git"))?;
 
         let checksums = get_checksums(

@@ -59,6 +59,8 @@ jobs:
         include:
           - os: macos-latest
             target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
           - os: ubuntu-latest
@@ -113,7 +115,12 @@ jobs:
       - name: Calculate checksum
         shell: bash
         run: |
-          echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt
+          if sha256sum -v &> /dev/null; then
+            sha=$(sha256sum upload.zip)
+          else
+            sha=$(shasum -a 256 upload.zip)
+          fi
+          echo $(echo $sha | cut -d ' ' -f 1) > sha256sum.txt
       - name: Upload checksums
         uses: actions/upload-release-asset@v1
         env:

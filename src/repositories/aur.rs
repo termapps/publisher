@@ -60,9 +60,9 @@ impl Repository for Aur {
             license,
             repository,
             ..
-        } = &info;
+        } = info;
 
-        let name = get_name(&info);
+        let name = get_name(info);
         let (sh, dir) = prepare_git_repo(self, &format!("ssh://aur@aur.archlinux.org/{name}.git"))?;
 
         let github_repo_name = repository.split('/').last().unwrap();

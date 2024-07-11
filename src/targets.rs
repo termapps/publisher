@@ -2,6 +2,7 @@ use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Target {
+    Aarch64AppleDarwin,
     X86_64AppleDarwin,
     X86_64UnknownLinuxGnu,
     I686UnknownLinuxGnu,
@@ -13,6 +14,7 @@ pub enum Target {
 impl Display for Target {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
+            Target::Aarch64AppleDarwin => write!(f, "aarch64-apple-darwin"),
             Target::X86_64AppleDarwin => write!(f, "x86_64-apple-darwin"),
             Target::X86_64UnknownLinuxGnu => write!(f, "x86_64-unknown-linux-gnu"),
             Target::I686UnknownLinuxGnu => write!(f, "i686-unknown-linux-gnu"),
