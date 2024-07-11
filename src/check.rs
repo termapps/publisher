@@ -190,16 +190,12 @@ pub fn check_repo(
 
     sh.change_dir(dir);
 
-    let push_result = cmd!(sh, "git push")
-        .quiet()
-        .ignore_status()
-        .read_stderr()
-        .unwrap_or_else(|_| "permission denied".into());
+    let push_result = cmd!(sh, "git push").quiet().read_stderr();
 
     sh.change_dir("..");
     cmd!(sh, "rm -rf {dir}").quiet().run()?;
 
-    if push_result.contains("permission denied") {
+    if push_result.is_err() {
         results.add_result(
             "repo",
             Some("write access to the repository not configured"),

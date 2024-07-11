@@ -28,22 +28,26 @@ impl Repository for Aur {
         check_git(&sh, results);
         check_curl(&sh, results);
 
-        let output = cmd!(sh, "ssh aur@aur.archlinux.org")
+        let ssh_configured = cmd!(sh, "ssh aur@aur.archlinux.org")
             .quiet()
             .ignore_status()
-            .read_stderr()?;
+            .read_stderr()?
+            .contains("Interactive shell is disabled.");
 
         results.add_result(
             "ssh",
-            (!output.contains("Interactive shell is disabled."))
-                .then_some("AUR SSH access is not configured"),
+            (!ssh_configured).then_some("AUR SSH access is not configured"),
         );
 
         let name = get_name(&info);
 
         check_repo(
             &sh,
-            &format!("ssh://aur@aur.archlinux.org/{name}.git"),
+            &if ssh_configured {
+                format!("ssh://aur@aur.archlinux.org/{name}.git")
+            } else {
+                format!("https://aur.archlinux.org/{name}.git")
+            },
             "master",
             results,
             true,
