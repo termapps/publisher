@@ -58,10 +58,12 @@ impl Publish {
             repository.publish(&config, &self.version, !self.no_dry_run)?;
         }
 
-        warn!(
-            "{}",
-            "Not publishing because dry run mode is enabled".yellow()
-        );
+        if !self.no_dry_run {
+            warn!(
+                "{}",
+                "Not publishing because dry run mode is enabled".yellow()
+            );
+        }
 
         Ok(())
     }

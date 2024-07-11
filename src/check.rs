@@ -160,6 +160,7 @@ pub fn check_repo(
 
     if cmd!(sh, "git ls-remote --exit-code {remote}")
         .quiet()
+        .ignore_stdout()
         .read_stderr()
         .is_err()
     {
