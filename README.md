@@ -23,13 +23,28 @@
 <!-- publisher install start -->
 ## Install
 
-`publisher` is available on Linux, macOS
+`publisher` is available on Linux, macOS & Windows
 
 <!-- omit from toc -->
 ### With [Homebrew](https://brew.sh/)
 
 ```
 $ brew install termapps/tap/publisher
+```
+
+<!-- omit from toc -->
+### With [Scoop](https://scoop.sh)
+
+```
+$ scoop bucket add termapps https://github.com/termapps/scoop-bucket
+$ scoop install publisher
+```
+
+<!-- omit from toc -->
+### With [AUR](https://aur.archlinux.org)
+
+```
+$ yay -S publisher
 ```
 
 <!-- omit from toc -->
@@ -42,9 +57,9 @@ $ cargo install publisher
 <!-- omit from toc -->
 ### Direct
 
-Pre-built binary executables are available at [releases page](https://github.com/termapps/publisher/releases) for macOS (64bit), Linux (64bit, 32bit).
+Pre-built binary executables are available at [releases page](https://github.com/termapps/publisher/releases).
 
-Download and unarchive the binary then put the executable in `$PATH`.
+Download, unarchive the binary, and then put the executable in `$PATH`.
 
 <!-- publisher install end -->
 ## Usage

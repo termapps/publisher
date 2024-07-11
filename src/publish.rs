@@ -4,8 +4,8 @@ use crate::{
     error::Result,
     init::CONFIG_FILE,
     repositories::{
-        aur::AurInfo, aur_bin::AurBinInfo, build, homebrew::HomebrewInfo, update_config,
-        Repositories, Repository,
+        aur::AurInfo, aur_bin::AurBinInfo, build, homebrew::HomebrewInfo, scoop::ScoopInfo,
+        update_config, Repositories, Repository,
     },
 };
 
@@ -40,6 +40,7 @@ pub struct PublishInfo {
     pub aur: Option<AurInfo>,
     pub aur_bin: Option<AurBinInfo>,
     pub homebrew: Option<HomebrewInfo>,
+    pub scoop: Option<ScoopInfo>,
 }
 
 impl Publish {

@@ -3,6 +3,7 @@ use std::{collections::HashMap, fmt::Debug};
 pub mod aur;
 pub mod aur_bin;
 pub mod homebrew;
+pub mod scoop;
 
 use clap::ValueEnum;
 use xshell::{cmd, Shell};
@@ -22,6 +23,7 @@ pub enum Repositories {
     AurBin,
     Aur,
     Homebrew,
+    Scoop,
 }
 
 impl Repositories {
@@ -30,6 +32,7 @@ impl Repositories {
             Repositories::AurBin => Box::new(aur_bin::AurBin),
             Repositories::Aur => Box::new(aur::Aur),
             Repositories::Homebrew => Box::new(homebrew::Homebrew),
+            Repositories::Scoop => Box::new(scoop::Scoop),
         }
     }
 }

@@ -12,3 +12,6 @@ name = "publisher"
 
 [homebrew]
 repository = "termapps/homebrew-tap"
+
+[scoop]
+repository = "termapps/scoop-bucket"

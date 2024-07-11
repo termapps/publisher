@@ -13,6 +13,8 @@ pub enum Error {
     ChecksFailed,
     #[error("No configuration found for homebrew")]
     NoHomebrewConfig,
+    #[error("No configuration found for scoop")]
+    NoScoopConfig,
     #[error("Unable to parse the configuration file: {0}")]
     Config(#[from] config::ConfigError),
     #[error("Unable to run a command: {0}")]
