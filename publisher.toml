@@ -8,7 +8,7 @@ repository  = "termapps/publisher"
 exclude = ["aur"]
 
 [aur_bin]
-repository = "publisher"
+name = "publisher"
 
 [homebrew]
 repository = "termapps/homebrew-tap"

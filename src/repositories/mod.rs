@@ -58,11 +58,7 @@ pub fn build(repositories: &[Repositories], exclude: &[String]) -> Vec<Box<dyn R
         .collect()
 }
 
-pub fn update_conflicts(
-    repositories: &[Repositories],
-    exclude: &[String],
-    config: &mut PublishInfo,
-) {
+pub fn update_config(repositories: &[Repositories], exclude: &[String], config: &mut PublishInfo) {
     let repos = get_repositories(repositories, exclude);
 
     // Add conflicts between AUR and AUR (bin) if both are selected

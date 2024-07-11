@@ -27,16 +27,10 @@ impl Repository for Homebrew {
         check_git(&sh, results);
         check_curl(&sh, results);
 
-        if info.homebrew.is_none() {
-            results.add_result("config", Some("No configuration found for homebrew"));
-        }
-
         if let Some(homebrew) = &info.homebrew {
-            let repository = &homebrew.repository;
-
             check_repo(
                 &sh,
-                &format!("git@github.com:{repository}"),
+                &format!("git@github.com:{}", homebrew.repository),
                 "master",
                 results,
                 false,

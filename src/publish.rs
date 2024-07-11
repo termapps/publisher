@@ -4,7 +4,7 @@ use crate::{
     error::Result,
     init::CONFIG_FILE,
     repositories::{
-        aur::AurInfo, aur_bin::AurBinInfo, build, homebrew::HomebrewInfo, update_conflicts,
+        aur::AurInfo, aur_bin::AurBinInfo, build, homebrew::HomebrewInfo, update_config,
         Repositories, Repository,
     },
 };
@@ -24,9 +24,9 @@ pub struct Publish {
     /// The name(s) of the package repository
     repositories: Vec<Repositories>,
 
-    /// Confirm the publish action
+    /// Disable dry run mode
     #[clap(long)]
-    yes: bool,
+    no_dry_run: bool,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -49,18 +49,18 @@ impl Publish {
         let exclude = config.exclude.clone().unwrap_or_default();
 
         // We need to update config depending on what user has provided
-        update_conflicts(&self.repositories, &exclude, &mut config);
+        update_config(&self.repositories, &exclude, &mut config);
 
         let repositories = build(&self.repositories, &exclude);
 
         for repository in repositories {
             info!("{}", repository.name().blue());
-            repository.publish(&config, &self.version, !self.yes)?;
+            repository.publish(&config, &self.version, !self.no_dry_run)?;
         }
 
         warn!(
             "{}",
-            "Not published because dry-run mode was enabled".yellow()
+            "Not publishing because dry run mode is enabled".yellow()
         );
 
         Ok(())

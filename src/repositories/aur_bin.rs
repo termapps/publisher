@@ -9,7 +9,7 @@ use crate::{
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
 pub struct AurBinInfo {
-    pub repository: Option<String>,
+    pub name: Option<String>,
     pub conflicts: Option<Vec<String>>,
 }
 
@@ -110,8 +110,8 @@ impl Repository for AurBin {
                 format!("license=({license:?})"),
                 format!("provides=({cli_name:?})"),
                 format!("conflicts=({conflicts_pkgbuild})"),
-                format!("source_x86_64=($pkgname-$pkgver.zip::{download_url}-x86_64-unknown-linux-gnu.zip)"),
-                format!("source_i686=($pkgname-$pkgver.zip::{download_url}-i686-unknown-linux-gnu.zip)"),
+                format!("source_x86_64=($pkgname-$pkgver.zip::https://github.com/{repository}/releases/download/v$pkgver/{cli_name}-v$pkgver-x86_64-unknown-linux-gnu.zip)"),
+                format!("source_i686=($pkgname-$pkgver.zip::https://github.com/{repository}/releases/download/v$pkgver/{cli_name}-v$pkgver-i686-unknown-linux-gnu.zip)"),
                 format!("sha256sums_x86_64=({x86_64_checksum:?})"),
                 format!("sha256sums_i686=({i686_checksum:?})"),
                 format!(""),
@@ -152,9 +152,9 @@ impl Repository for AurBin {
     }
 }
 
-pub fn get_name(info: &PublishInfo) -> String {
+pub(super) fn get_name(info: &PublishInfo) -> String {
     info.aur_bin
         .as_ref()
-        .and_then(|info| info.repository.clone())
+        .and_then(|info| info.name.clone())
         .unwrap_or_else(|| format!("{}-bin", info.name))
 }

@@ -9,7 +9,7 @@ use crate::{
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
 pub struct AurInfo {
-    pub repository: Option<String>,
+    pub name: Option<String>,
     pub conflicts: Option<Vec<String>>,
 }
 
@@ -149,9 +149,9 @@ impl Repository for Aur {
     }
 }
 
-pub fn get_name(info: &PublishInfo) -> String {
+pub(super) fn get_name(info: &PublishInfo) -> String {
     info.aur
         .as_ref()
-        .and_then(|info| info.repository.clone())
+        .and_then(|info| info.name.clone())
         .unwrap_or_else(|| info.name.clone())
 }
