@@ -1,10 +1,11 @@
 use xshell::{cmd, Shell};
 
+use super::{get_checksums, Repository};
 use crate::{
     check::{check_curl, check_git, check_repo, CheckResults},
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add, PublishInfo},
-    repositories::Repository,
+    targets::Target,
 };
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
@@ -65,14 +66,8 @@ impl Repository for Aur {
         let (sh, dir) = prepare_git_repo(self, &format!("ssh://aur@aur.archlinux.org/{name}.git"))?;
 
         let github_repo_name = repository.split('/').last().unwrap();
-        let download_url = format!("https://github.com/{repository}");
 
-        let checksum = cmd!(
-            sh,
-            "curl -L {download_url}/releases/download/v{version}/{cli_name}-v{version}_sha256sum.txt"
-        )
-        .ignore_stderr()
-        .read()?;
+        let checksums = get_checksums(info, version, vec![Target::Source])?;
 
         let conflicts = info
             .aur
@@ -104,8 +99,8 @@ impl Repository for Aur {
                 format!("provides=({cli_name:?})"),
                 format!("conflicts=({conflicts_pkgbuild})"),
                 format!("makedepends=('cargo')"),
-                format!("source=($pkgname-$pkgver.zip::{download_url}/archive/refs/tags/v$pkgver.zip)"),
-                format!("sha256sums=({checksum:?})"),
+                format!("source=($pkgname-$pkgver.zip::https://github.com/{repository}/archive/refs/tags/v$pkgver.zip)"),
+                format!("sha256sums=({:?})", checksums.get(&Target::Source).unwrap()),
                 format!(""),
                 format!("build() {{"),
                 format!("    cd \"$srcdir/{github_repo_name}-$pkgver\""),
@@ -133,9 +128,9 @@ impl Repository for Aur {
                 format!("\tprovides = {cli_name}"),
                 conflicts_srcinfo,
                 format!(
-                    "\tsource = {name}-{version}.zip::{download_url}/archive/refs/tags/v{version}.zip"
+                    "\tsource = {name}-{version}.zip::https://github.com/{repository}/archive/refs/tags/v{version}.zip"
                 ),
-                format!("\tsha256sums = {checksum}"),
+                format!("\tsha256sums = {}", checksums.get(&Target::Source).unwrap()),
                 format!(""),
                 format!("pkgname = {name}"),
             ]

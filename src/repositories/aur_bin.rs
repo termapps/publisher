@@ -1,10 +1,11 @@
 use xshell::{cmd, Shell};
 
+use super::{get_checksums, Repository};
 use crate::{
     check::{check_curl, check_git, check_repo, CheckResults},
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add, PublishInfo},
-    repositories::Repository,
+    targets::Target,
 };
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
@@ -64,22 +65,11 @@ impl Repository for AurBin {
         let name = get_name(&info);
         let (sh, dir) = prepare_git_repo(self, &format!("ssh://aur@aur.archlinux.org/{name}.git"))?;
 
-        let download_url = format!(
-            "https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}"
-        );
-
-        let x86_64_checksum = cmd!(
-            sh,
-            "curl -L {download_url}-x86_64-unknown-linux-gnu_sha256sum.txt"
-        )
-        .ignore_stderr()
-        .read()?;
-        let i686_checksum = cmd!(
-            sh,
-            "curl -L {download_url}-i686-unknown-linux-gnu_sha256sum.txt"
-        )
-        .ignore_stderr()
-        .read()?;
+        let checksums = get_checksums(
+            info,
+            version,
+            vec![Target::X86_64UnknownLinuxGnu, Target::I686UnknownLinuxGnu],
+        )?;
 
         let conflicts = info
             .aur_bin
@@ -112,8 +102,8 @@ impl Repository for AurBin {
                 format!("conflicts=({conflicts_pkgbuild})"),
                 format!("source_x86_64=($pkgname-$pkgver.zip::https://github.com/{repository}/releases/download/v$pkgver/{cli_name}-v$pkgver-x86_64-unknown-linux-gnu.zip)"),
                 format!("source_i686=($pkgname-$pkgver.zip::https://github.com/{repository}/releases/download/v$pkgver/{cli_name}-v$pkgver-i686-unknown-linux-gnu.zip)"),
-                format!("sha256sums_x86_64=({x86_64_checksum:?})"),
-                format!("sha256sums_i686=({i686_checksum:?})"),
+                format!("sha256sums_x86_64=({:?})", checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()),
+                format!("sha256sums_i686=({:?})", checksums.get(&Target::I686UnknownLinuxGnu).unwrap()),
                 format!(""),
                 format!("package() {{"),
                 format!("    cd \"$srcdir\""),
@@ -135,10 +125,10 @@ impl Repository for AurBin {
                 format!("\tlicense = {license}"),
                 format!("\tprovides = {cli_name}"),
                 conflicts_srcinfo,
-                format!("\tsource_x86_64 = {name}-{version}.zip::{download_url}-x86_64-unknown-linux-gnu.zip"),
-                format!("\tsha256sums_x86_64 = {x86_64_checksum}"),
-                format!("\tsource_i686 = {name}-{version}.zip::{download_url}-i686-unknown-linux-gnu.zip"),
-                format!("\tsha256sums_i686 = {i686_checksum}"),
+                format!("\tsource_x86_64 = {name}-{version}.zip::https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-x86_64-unknown-linux-gnu.zip"),
+                format!("\tsha256sums_x86_64 = {}", checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()),
+                format!("\tsource_i686 = {name}-{version}.zip::https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-i686-unknown-linux-gnu.zip"),
+                format!("\tsha256sums_i686 = {}", checksums.get(&Target::I686UnknownLinuxGnu).unwrap()),
                 format!(""),
                 format!("pkgname = {name}"),
             ]

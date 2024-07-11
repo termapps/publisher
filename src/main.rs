@@ -1,6 +1,7 @@
 use std::io::stdout;
 
 mod repositories;
+mod targets;
 
 mod error;
 mod styles;

@@ -1,12 +1,13 @@
-use std::fmt::Debug;
+use std::{collections::HashMap, fmt::Debug};
 
 pub mod aur;
 pub mod aur_bin;
 pub mod homebrew;
 
 use clap::ValueEnum;
+use xshell::{cmd, Shell};
 
-use crate::{check::CheckResults, error::Result, publish::PublishInfo};
+use crate::{check::CheckResults, error::Result, publish::PublishInfo, targets::Target};
 
 pub trait Repository {
     fn name(&self) -> &'static str;
@@ -81,4 +82,35 @@ pub fn update_config(repositories: &[Repositories], exclude: &[String], config: 
             .get_or_insert_with(Default::default)
             .push(aur_name);
     }
+}
+
+pub fn get_checksums(
+    info: &PublishInfo,
+    version: &str,
+    targets: Vec<Target>,
+) -> Result<HashMap<Target, String>> {
+    let PublishInfo {
+        name, repository, ..
+    } = info;
+
+    let sh = Shell::new()?;
+    let download_url =
+        format!("https://github.com/{repository}/releases/download/v{version}/{name}-v{version}");
+
+    targets
+        .into_iter()
+        .map(|target| {
+            let target_str = if target != Target::Source {
+                format!("-{target}")
+            } else {
+                format!("")
+            };
+
+            let checksum = cmd!(sh, "curl -L {download_url}{target_str}_sha256sum.txt")
+                .ignore_stderr()
+                .read()?;
+
+            Ok((target, checksum))
+        })
+        .collect()
 }
