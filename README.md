@@ -18,7 +18,8 @@
 
 1. [Install](#install)
 2. [Usage](#usage)
-3. [Changelog](#changelog)
+3. [Configuration](#configuration)
+4. [Changelog](#changelog)
 
 <!-- publisher install start -->
 ## Install
@@ -26,14 +27,21 @@
 `publisher` is available on Linux, macOS & Windows
 
 <!-- omit from toc -->
-### With [Homebrew](https://brew.sh/)
+#### With [Homebrew](https://brew.sh/)
 
 ```
 $ brew install termapps/tap/publisher
 ```
 
 <!-- omit from toc -->
-### With [Scoop](https://scoop.sh)
+#### With [AUR](https://aur.archlinux.org)
+
+```
+$ yay -S publisher
+```
+
+<!-- omit from toc -->
+#### With [Scoop](https://scoop.sh)
 
 ```
 $ scoop bucket add termapps https://github.com/termapps/scoop-bucket
@@ -41,21 +49,14 @@ $ scoop install publisher
 ```
 
 <!-- omit from toc -->
-### With [AUR](https://aur.archlinux.org)
-
-```
-$ yay -S publisher
-```
-
-<!-- omit from toc -->
-### With [cargo](https://crates.io/)
+#### With [cargo](https://crates.io/)
 
 ```
 $ cargo install publisher
 ```
 
 <!-- omit from toc -->
-### Direct
+#### Direct
 
 Pre-built binary executables are available at [releases page](https://github.com/termapps/publisher/releases).
 
@@ -64,12 +65,115 @@ Download, unarchive the binary, and then put the executable in `$PATH`.
 <!-- publisher install end -->
 ## Usage
 
+Run the following to publish a version to all [package repositories](#package-repositories).
+
+```
+$ publisher publish 1.0.0
+```
+
+Or alternatively, discover more subcommands and options:
+
+```
+$ publisher help
+```
+
+<!-- omit from toc -->
+#### Subcommands
+
+- **init**: Help setup everthing needed for publishing to package repositories.
+- **check**: Check requirements for publishing to package repositories.
+- **publish**: Publish the tool to package repositories.
+
+<!-- omit from toc -->
+#### Package Repositories
+
+- [AUR](https://aur.archlinux.org)
+- [AUR (binary)](https://aur.archlinux.org)
+- [Homebrew](https://homebrew.sh)
+- [Scoop](https://scoop.sh)
+
+## Configuration
+
+Publisher can be configured using `publisher.toml` file. The below options are avaialable:
+
+| Name          |   Type   | Required | Description                                                   |
+| ------------- | :------: | :------: | ------------------------------------------------------------- |
+| `name`        |  string  |   Yes    | Name of the binary                                            |
+| `description` |  string  |   Yes    | Description of the project                                    |
+| `homepage`    |  string  |   Yes    | URL of the project homepage                                   |
+| `license`     |  string  |   Yes    | License                                                       |
+| `repository`  |  string  |   Yes    | URI of the GitHub repository (ex: termapps/publisher)         |
+| `exclude`     | string[] |    No    | [Package Repository selection](#package-repository-selection) |
+| `aur`         |  object  |    No    | [AUR](#aur)                                                   |
+| `aur_bin`     |  object  |    No    | [AUR (binary)](#aur-binary)                                   |
+| `homebrew`    |  object  |   Yes    | [Homebrew](#homebrew)                                         |
+| `scoop`       |  object  |   Yes    | [Scoop](#scoop)                                               |
+
+<!-- omit from toc -->
+#### AUR
+
+| Name        |   Type   | Required | Description                             |
+| ----------- | :------: | :------: | --------------------------------------- |
+| `name`      |  string  |    No    | Name of the package                     |
+| `conflicts` | string[] |    No    | Packages in AUR that conflict with this |
+
+- `name` defaults to the binary name.
+- Automatically adds `AUR (binary)` package to `conflicts` if it is selected.
+
+<!-- omit from toc -->
+#### AUR (binary)
+
+| Name        |   Type   | Required | Description                             |
+| ----------- | :------: | :------: | --------------------------------------- |
+| `name`      |  string  |    No    | Name of the package                     |
+| `conflicts` | string[] |    No    | Packages in AUR that conflict with this |
+
+- `name` defaults to the binary name concatenated with `-bin`.
+- Automatically adds `AUR` package to `conflicts` if it is selected.
+
+<!-- omit from toc -->
+#### Homebrew
+
+| Name         |   Type   | Required | Description                            |
+| ------------ | :------: | :------: | -------------------------------------- |
+| `name`       |  string  |    No    | Name of the formula                    |
+| `repository` | string[] |   Yes    | GitHub repository for the homebrew tap |
+
+- `name` defaults to the binary name.
+
+<!-- omit from toc -->
+#### Scoop
+
+| Name         |   Type   | Required | Description                            |
+| ------------ | :------: | :------: | -------------------------------------- |
+| `name`       |  string  |    No    | Name of the app                        |
+| `repository` | string[] |   Yes    | GitHub repository for the scoop bucket |
+
+- `name` defaults to the binary name.
+
+<!-- omit from toc -->
+#### Package Repository selection
+
+- By default, all the available [package repositories](#package-repositories) are selected if not specified in the subcommand.
+- If `exclude` is configured, then those will be excluded from the above selected package repositories.
+
 <!-- omit from toc -->
 ## Contributors
 Here is a list of [Contributors](http://github.com/termapps/publisher/contributors)
 
 <!-- omit from toc -->
 ### TODO
+
+- Package repositories
+  + Alpine Linux ([#1](https://github.com/termapps/publisher/issues/1))
+  + Nixpkgs ([#10](https://github.com/termapps/publisher/issues/10))
+  + Cargo
+  + NPM
+  + PyPi
+- Platforms ([#4](https://github.com/termapps/publisher/issues/4))
+- Shell completions ([#8](https://github.com/termapps/publisher/issues/8))
+- Manpages ([#9](https://github.com/termapps/publisher/issues/9))
+- Maintainer ([#5](https://github.com/termapps/publisher/issues/5))
 
 ## Changelog
 Please see [CHANGELOG.md](CHANGELOG.md).

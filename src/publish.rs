@@ -33,9 +33,9 @@ pub struct Publish {
 pub struct PublishInfo {
     pub name: String,
     pub description: String,
-    pub repository: String,
-    pub license: String,
     pub homepage: String,
+    pub license: String,
+    pub repository: String,
     pub exclude: Option<Vec<String>>,
     pub aur: Option<AurInfo>,
     pub aur_bin: Option<AurBinInfo>,

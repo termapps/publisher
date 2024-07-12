@@ -20,8 +20,8 @@ pub trait Repository {
 
 #[derive(Debug, Clone, PartialEq, Eq, ValueEnum)]
 pub enum Repositories {
-    AurBin,
     Aur,
+    AurBin,
     Homebrew,
     Scoop,
 }
@@ -29,8 +29,8 @@ pub enum Repositories {
 impl Repositories {
     fn build(&self) -> Box<dyn Repository> {
         match self {
-            Repositories::AurBin => Box::new(aur_bin::AurBin),
             Repositories::Aur => Box::new(aur::Aur),
+            Repositories::AurBin => Box::new(aur_bin::AurBin),
             Repositories::Homebrew => Box::new(homebrew::Homebrew),
             Repositories::Scoop => Box::new(scoop::Scoop),
         }
