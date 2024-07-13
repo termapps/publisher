@@ -1,4 +1,7 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::{
+    collections::HashMap,
+    fmt::{Debug, Display, Formatter, Result as FmtResult},
+};
 
 pub mod aur;
 pub mod aur_bin;
@@ -26,8 +29,14 @@ pub enum Repositories {
     Scoop,
 }
 
+impl Display for Repositories {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        write!(f, "{}", self.build().name())
+    }
+}
+
 impl Repositories {
-    fn build(&self) -> Box<dyn Repository> {
+    pub fn build(&self) -> Box<dyn Repository> {
         match self {
             Repositories::Aur => Box::new(aur::Aur),
             Repositories::AurBin => Box::new(aur_bin::AurBin),

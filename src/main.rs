@@ -7,7 +7,7 @@ mod error;
 mod styles;
 
 mod check;
-mod init;
+mod generate;
 mod publish;
 
 use anstream::{AutoStream, ColorChoice};
@@ -35,7 +35,7 @@ struct App {
 #[derive(Debug, Parser)]
 enum Subcommands {
     Check(check::Check),
-    Init(init::Init),
+    Generate(generate::Generate),
     Publish(publish::Publish),
 }
 
@@ -56,7 +56,7 @@ fn main() {
 
     let result = match program.cmd {
         Subcommands::Check(x) => x.run(),
-        Subcommands::Init(x) => x.run(),
+        Subcommands::Generate(x) => x.run(),
         Subcommands::Publish(x) => x.run(),
     };
 

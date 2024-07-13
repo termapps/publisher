@@ -65,13 +65,34 @@ Download, unarchive the binary, and then put the executable in `$PATH`.
 <!-- publisher install end -->
 ## Usage
 
-Run the following to publish a version to all [package repositories](#package-repositories).
+> NOTE: Only supports tools hosted in GitHub for now.
+
+Setup your CI pipeline to build release artifacts. *(Only needed for first time setup)*.
+
+```t
+$ publisher generate ci
+```
+
+Update your code, commit and push to repository with a version tag.
 
 ```
+$ git tag v1.0.0
+$ git push --tags
+```
+
+Check that you meet all requirements for publishing to configured [package repositories](#package-repositories).
+
+```t
 $ publisher publish 1.0.0
 ```
 
-Or alternatively, discover more subcommands and options:
+Run the following to publish a version to configured [package repositories](#package-repositories).
+
+```t
+$ publisher publish 1.0.0
+```
+
+Discover more subcommands and options:
 
 ```
 $ publisher help
@@ -80,17 +101,22 @@ $ publisher help
 <!-- omit from toc -->
 #### Subcommands
 
-- **init**: Help setup everthing needed for publishing to package repositories.
+- **generate**: Generate things related to publishing.
 - **check**: Check requirements for publishing to package repositories.
 - **publish**: Publish the tool to package repositories.
 
 <!-- omit from toc -->
 #### Package Repositories
 
-- [AUR](https://aur.archlinux.org)
+The following packages distribute the built binary directly:
+
 - [AUR (binary)](https://aur.archlinux.org)
 - [Homebrew](https://homebrew.sh)
 - [Scoop](https://scoop.sh)
+
+The following packages are built from source:
+
+- [AUR](https://aur.archlinux.org)
 
 ## Configuration
 
@@ -188,6 +214,6 @@ Report [here](http://github.com/termapps/publisher/issues).
 
 <!-- omit from toc -->
 ## Creator
-Pavan Kumar Sunkara (pavan.sss1991@gmail.com)
+Pavan Kumar Sunkara
 
 Follow me on [github](https://github.com/users/follow?target=pksunkara), [twitter](http://twitter.com/pksunkara)

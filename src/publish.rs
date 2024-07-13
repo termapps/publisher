@@ -2,7 +2,6 @@ use std::{fmt::Debug, fs::write};
 
 use crate::{
     error::Result,
-    init::CONFIG_FILE,
     repositories::{
         aur::AurInfo, aur_bin::AurBinInfo, build, homebrew::HomebrewInfo, scoop::ScoopInfo,
         update_config, Repositories, Repository,
@@ -10,10 +9,12 @@ use crate::{
 };
 
 use clap::Parser;
-use config::{Config, Environment, File, FileFormat};
+use config::{Config, File, FileFormat};
 use owo_colors::OwoColorize;
 use tracing::{info, instrument, warn};
 use xshell::{cmd, Shell};
+
+pub const CONFIG_FILE: &str = "publisher.toml";
 
 /// Publish the tool to package repositories
 #[derive(Debug, Parser)]
@@ -72,7 +73,6 @@ impl Publish {
 
 pub fn read_config() -> Result<PublishInfo> {
     Ok(Config::builder()
-        .add_source(Environment::with_prefix("PUBLISHER").separator("_"))
         .add_source(File::new(CONFIG_FILE, FileFormat::Toml))
         .build()?
         .try_deserialize::<PublishInfo>()?)
