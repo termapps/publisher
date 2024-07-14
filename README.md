@@ -3,9 +3,11 @@
 
 A simple CLI application using clap
 
-1. [Install](#install)
-2. [Usage](#usage)
+1. [Usage](#usage)
+2. [Install](#install)
 3. [Changelog](#changelog)
+
+## Usage
 
 <!-- publisher install start -->
 ## Install
@@ -13,7 +15,7 @@ A simple CLI application using clap
 `cli-clap` is available on Linux, macOS & Windows
 
 <!-- omit from toc -->
-#### With [Homebrew](https://brew.sh/)
+#### With [Homebrew](https://brew.sh)
 
 ```
 $ brew install termapps/tap/cli-clap
@@ -49,8 +51,6 @@ Pre-built binary executables are available at [releases page](https://github.com
 Download, unarchive the binary, and then put the executable in `$PATH`.
 
 <!-- publisher install end -->
-## Usage
-
 <!-- omit from toc -->
 ## Contributors
 Here is a list of [Contributors](http://github.com/termapps/cli-clap/contributors)
