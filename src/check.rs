@@ -164,7 +164,7 @@ pub fn check_repo(
         .read_stderr()
         .is_err()
     {
-        results.add_result_warn("repo", Some("repository not found"), warn);
+        results.add_result_warn("repo", Some("repository not found or is empty"), warn);
         return Ok(());
     }
 
@@ -173,7 +173,7 @@ pub fn check_repo(
         .read()
         .is_err()
     {
-        results.add_result("repo", Some("repository branch does not exist"));
+        results.add_result("repo", Some("repository branch 'master' does not exist"));
         return Ok(());
     }
 
