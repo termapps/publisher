@@ -17,9 +17,10 @@
 ## Getting started
 
 1. [Usage](#usage)
-2. [Install](#install)
-3. [Configuration](#configuration)
-4. [Changelog](#changelog)
+2. [Package Repositories](#package-repositories)
+3. [Install](#install)
+4. [Configuration](#configuration)
+5. [Changelog](#changelog)
 
 ## Usage
 
@@ -27,7 +28,7 @@
 
 Setup your CI pipeline to build release artifacts. *(Only needed for first time setup)*.
 
-```t
+```
 $ publisher generate ci
 ```
 
@@ -40,39 +41,31 @@ $ git push --tags
 
 Check that you meet all requirements for publishing to configured [package repositories](#package-repositories).
 
-```t
-$ publisher publish 1.0.0
+```
+$ publisher check
 ```
 
 Run the following to publish a version to configured [package repositories](#package-repositories).
 
-```t
+```
 $ publisher publish 1.0.0
 ```
 
-Discover more subcommands and options:
+Discover more subcommands and options.
 
 ```
 $ publisher help
 ```
 
-<!-- omit from toc -->
-#### Subcommands
+## Package Repositories
 
-- **generate**: Generate things related to publishing.
-- **check**: Check requirements for publishing to package repositories.
-- **publish**: Publish the tool to package repositories.
-
-<!-- omit from toc -->
-#### Package Repositories
-
-The following packages distribute the built binary directly:
+Used for installing the built binary:
 
 - [AUR (binary)](https://aur.archlinux.org)
 - [Homebrew](https://homebrew.sh)
 - [Scoop](https://scoop.sh)
 
-The following packages are built from source:
+Used for building from source:
 
 - [AUR](https://aur.archlinux.org)
 
