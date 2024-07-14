@@ -92,6 +92,25 @@ impl Repository for Scoop {
 
         Ok(())
     }
+
+    fn instructions(&self, info: &PublishInfo) -> Result<Vec<String>> {
+        let scoop = info.scoop.as_ref().ok_or(Error::NoScoopConfig)?;
+
+        let name = get_name(info);
+        let bucket_org_name = scoop.repository.split('/').next().unwrap();
+
+        Ok(vec![
+            format!("With [Scoop](https://scoop.sh)"),
+            format!(""),
+            format!("```"),
+            format!(
+                "$ scoop bucket add {bucket_org_name} https://github.com/{}",
+                scoop.repository
+            ),
+            format!("$ scoop install {name}"),
+            format!("```"),
+        ])
+    }
 }
 
 fn get_name(info: &PublishInfo) -> String {

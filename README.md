@@ -16,53 +16,11 @@
 <!-- omit from toc -->
 ## Getting started
 
-1. [Install](#install)
-2. [Usage](#usage)
+1. [Usage](#usage)
+2. [Install](#install)
 3. [Configuration](#configuration)
 4. [Changelog](#changelog)
 
-<!-- publisher install start -->
-## Install
-
-`publisher` is available on Linux, macOS & Windows
-
-<!-- omit from toc -->
-#### With [Homebrew](https://brew.sh/)
-
-```
-$ brew install termapps/tap/publisher
-```
-
-<!-- omit from toc -->
-#### With [AUR](https://aur.archlinux.org)
-
-```
-$ yay -S publisher
-```
-
-<!-- omit from toc -->
-#### With [Scoop](https://scoop.sh)
-
-```
-$ scoop bucket add termapps https://github.com/termapps/scoop-bucket
-$ scoop install publisher
-```
-
-<!-- omit from toc -->
-#### With [cargo](https://crates.io/)
-
-```
-$ cargo install publisher
-```
-
-<!-- omit from toc -->
-#### Direct
-
-Pre-built binary executables are available at [releases page](https://github.com/termapps/publisher/releases).
-
-Download, unarchive the binary, and then put the executable in `$PATH`.
-
-<!-- publisher install end -->
 ## Usage
 
 > NOTE: Only supports tools hosted in GitHub for now.
@@ -118,6 +76,48 @@ The following packages are built from source:
 
 - [AUR](https://aur.archlinux.org)
 
+<!-- publisher install start -->
+## Install
+
+`publisher` is available on Linux, macOS & Windows
+
+<!-- omit from toc -->
+#### With [Homebrew](https://brew.sh)
+
+```
+$ brew install termapps/tap/publisher
+```
+
+<!-- omit from toc -->
+#### With [AUR](https://aur.archlinux.org)
+
+```
+$ yay -S publisher
+```
+
+<!-- omit from toc -->
+#### With [Scoop](https://scoop.sh)
+
+```
+$ scoop bucket add termapps https://github.com/termapps/scoop-bucket
+$ scoop install publisher
+```
+
+<!-- omit from toc -->
+#### With [cargo](https://crates.io/)
+
+```
+$ cargo install publisher
+```
+
+<!-- omit from toc -->
+#### Direct
+
+Pre-built binary executables are available at [releases page](https://github.com/termapps/publisher/releases).
+
+Download, unarchive the binary, and then put the executable in `$PATH`.
+
+<!-- publisher install end -->
 ## Configuration
 
 Publisher can be configured using `publisher.toml` file. The below options are avaialable:

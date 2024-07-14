@@ -107,6 +107,27 @@ impl Repository for Homebrew {
 
         Ok(())
     }
+
+    fn instructions(&self, info: &PublishInfo) -> Result<Vec<String>> {
+        let homebrew = info.homebrew.as_ref().ok_or(Error::NoHomebrewConfig)?;
+
+        let name = get_name(info);
+        let tap_org_name = homebrew.repository.split('/').next().unwrap();
+        let tap_name = homebrew
+            .repository
+            .split('/')
+            .last()
+            .unwrap()
+            .trim_start_matches("homebrew-");
+
+        Ok(vec![
+            format!("With [Homebrew](https://brew.sh)"),
+            format!(""),
+            format!("```"),
+            format!("$ brew install {tap_org_name}/{tap_name}/{name}"),
+            format!("```"),
+        ])
+    }
 }
 
 fn get_name(info: &PublishInfo) -> String {

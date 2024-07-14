@@ -15,6 +15,10 @@ pub enum Error {
     NoHomebrewConfig,
     #[error("No configuration found for scoop")]
     NoScoopConfig,
+    #[error("Unable to find start marker to place instructions")]
+    StartMarkerNotFound,
+    #[error("Unable to find end marker to place instructions")]
+    EndMarkerNotFound,
     #[error("Unable to parse the configuration file: {0}")]
     Config(#[from] config::ConfigError),
     #[error("Unable to run a command: {0}")]

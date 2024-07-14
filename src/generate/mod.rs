@@ -7,6 +7,7 @@ use owo_colors::OwoColorize;
 use tracing::{info, instrument};
 
 mod ci;
+mod instructions;
 
 /// Generates things related to publishing
 #[derive(Debug, Parser)]
@@ -18,6 +19,7 @@ pub struct Generate {
 #[derive(Debug, Parser)]
 enum Subcommands {
     CI(ci::CI),
+    Instructions(instructions::Instructions),
 }
 
 impl Generate {
@@ -27,6 +29,7 @@ impl Generate {
 
         match self.cmd {
             Subcommands::CI(x) => x.run(&config),
+            Subcommands::Instructions(x) => x.run(&config),
         }
     }
 }

@@ -146,6 +146,18 @@ impl Repository for Aur {
 
         Ok(())
     }
+
+    fn instructions(&self, info: &PublishInfo) -> Result<Vec<String>> {
+        let name = get_name(info);
+
+        Ok(vec![
+            format!("With [AUR](https://aur.archlinux.org)"),
+            format!(""),
+            format!("```"),
+            format!("$ yay -S {name}"),
+            format!("```"),
+        ])
+    }
 }
 
 pub(super) fn get_name(info: &PublishInfo) -> String {

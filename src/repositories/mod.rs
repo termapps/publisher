@@ -19,6 +19,8 @@ pub trait Repository {
     fn check(&self, check_result: &mut CheckResults, info: &PublishInfo) -> Result;
 
     fn publish(&self, info: &PublishInfo, version: &str, dry_run: bool) -> Result;
+
+    fn instructions(&self, info: &PublishInfo) -> Result<Vec<String>>;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, ValueEnum)]
