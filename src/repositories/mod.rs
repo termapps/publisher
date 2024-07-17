@@ -11,16 +11,16 @@ pub mod scoop;
 use clap::ValueEnum;
 use xshell::{cmd, Shell};
 
-use crate::{check::CheckResults, error::Result, publish::PublishInfo, targets::Target};
+use crate::{check::CheckResults, config::AppConfig, error::Result, targets::Target};
 
 pub trait Repository {
     fn name(&self) -> &'static str;
 
-    fn check(&self, check_result: &mut CheckResults, info: &PublishInfo) -> Result;
+    fn check(&self, check_result: &mut CheckResults, info: &AppConfig) -> Result;
 
-    fn publish(&self, info: &PublishInfo, version: &str, dry_run: bool) -> Result;
+    fn publish(&self, info: &AppConfig, version: &str, dry_run: bool) -> Result;
 
-    fn instructions(&self, info: &PublishInfo) -> Result<Vec<String>>;
+    fn instructions(&self, info: &AppConfig) -> Result<Vec<String>>;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, ValueEnum)]
@@ -73,7 +73,7 @@ pub fn build(repositories: &[Repositories], exclude: &[String]) -> Vec<Box<dyn R
         .collect()
 }
 
-pub fn update_config(repositories: &[Repositories], exclude: &[String], config: &mut PublishInfo) {
+pub fn update_config(repositories: &[Repositories], exclude: &[String], config: &mut AppConfig) {
     let repos = get_repositories(repositories, exclude);
 
     // Add conflicts between AUR and AUR (bin) if both are selected
@@ -98,12 +98,12 @@ pub fn update_config(repositories: &[Repositories], exclude: &[String], config: 
     }
 }
 
-pub fn get_checksums(
-    info: &PublishInfo,
+fn get_checksums(
+    info: &AppConfig,
     version: &str,
     targets: Vec<Target>,
 ) -> Result<HashMap<Target, String>> {
-    let PublishInfo {
+    let AppConfig {
         name, repository, ..
     } = info;
 

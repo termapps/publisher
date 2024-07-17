@@ -1,15 +1,17 @@
 use xshell::Shell;
 
-use super::{get_checksums, Repository};
+use super::get_checksums;
 use crate::{
     check::{check_curl, check_git, check_repo, CheckResults},
+    config::AppConfig,
     error::{Error, Result},
-    publish::{commit_and_push, prepare_git_repo, write_and_add, PublishInfo},
+    publish::{commit_and_push, prepare_git_repo, write_and_add},
+    repositories::Repository,
     targets::Target,
 };
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
-pub struct ScoopInfo {
+pub struct ScoopConfig {
     pub name: Option<String>,
     pub repository: String,
 }
@@ -22,7 +24,7 @@ impl Repository for Scoop {
         "Scoop"
     }
 
-    fn check(&self, results: &mut CheckResults, info: &PublishInfo) -> Result {
+    fn check(&self, results: &mut CheckResults, info: &AppConfig) -> Result {
         let sh = Shell::new()?;
 
         check_git(&sh, results);
@@ -43,8 +45,8 @@ impl Repository for Scoop {
         Ok(())
     }
 
-    fn publish(&self, info: &PublishInfo, version: &str, dry_run: bool) -> Result {
-        let PublishInfo {
+    fn publish(&self, info: &AppConfig, version: &str, dry_run: bool) -> Result {
+        let AppConfig {
             name: cli_name,
             description,
             homepage,
@@ -93,7 +95,7 @@ impl Repository for Scoop {
         Ok(())
     }
 
-    fn instructions(&self, info: &PublishInfo) -> Result<Vec<String>> {
+    fn instructions(&self, info: &AppConfig) -> Result<Vec<String>> {
         let scoop = info.scoop.as_ref().ok_or(Error::NoScoopConfig)?;
 
         let name = get_name(info);
@@ -113,7 +115,7 @@ impl Repository for Scoop {
     }
 }
 
-fn get_name(info: &PublishInfo) -> String {
+fn get_name(info: &AppConfig) -> String {
     info.scoop
         .as_ref()
         .and_then(|info| info.name.clone())

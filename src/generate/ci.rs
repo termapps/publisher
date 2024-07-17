@@ -1,7 +1,7 @@
-use crate::{error::Result, generate::write_lines, publish::PublishInfo};
-
 use clap::Parser;
 use tracing::instrument;
+
+use crate::{config::AppConfig, error::Result, generate::write_lines};
 
 /// Generates CI pipeline to build release artifacts
 #[derive(Debug, Parser)]
@@ -9,8 +9,8 @@ pub struct CI {}
 
 impl CI {
     #[instrument(name = "ci", skip_all)]
-    pub fn run(self, info: &PublishInfo) -> Result {
-        let PublishInfo {
+    pub fn run(self, info: &AppConfig) -> Result {
+        let AppConfig {
             name: cli_name,
             repository,
             ..

@@ -1,10 +1,10 @@
 use std::{fmt::Debug, fs::write};
 
-use crate::{error::Result, publish::read_config};
-
 use clap::Parser;
 use owo_colors::OwoColorize;
 use tracing::{info, instrument};
+
+use crate::{config::read_config, error::Result};
 
 mod ci;
 mod instructions;

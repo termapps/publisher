@@ -1,15 +1,15 @@
 use std::collections::HashMap;
 
-use crate::{
-    error::{Error, Result},
-    publish::read_config,
-    repositories::{build, Repositories},
-};
-
 use clap::Parser;
 use owo_colors::OwoColorize;
 use tracing::{info, instrument};
 use xshell::{cmd, Shell};
+
+use crate::{
+    config::read_config,
+    error::{Error, Result},
+    repositories::{build, Repositories},
+};
 
 /// Check requirements for publishing to package repositories
 #[derive(Debug, Parser)]

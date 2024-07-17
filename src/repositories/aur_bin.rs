@@ -1,15 +1,17 @@
 use xshell::{cmd, Shell};
 
-use super::{get_checksums, Repository};
+use super::get_checksums;
 use crate::{
     check::{check_curl, check_git, check_repo, CheckResults},
+    config::AppConfig,
     error::Result,
-    publish::{commit_and_push, prepare_git_repo, write_and_add, PublishInfo},
+    publish::{commit_and_push, prepare_git_repo, write_and_add},
+    repositories::Repository,
     targets::Target,
 };
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
-pub struct AurBinInfo {
+pub struct AurBinConfig {
     pub name: Option<String>,
     pub conflicts: Option<Vec<String>>,
 }
@@ -22,7 +24,7 @@ impl Repository for AurBin {
         "AUR (bin)"
     }
 
-    fn check(&self, results: &mut CheckResults, info: &PublishInfo) -> Result {
+    fn check(&self, results: &mut CheckResults, info: &AppConfig) -> Result {
         let sh = Shell::new()?;
 
         check_git(&sh, results);
@@ -56,8 +58,8 @@ impl Repository for AurBin {
         Ok(())
     }
 
-    fn publish(&self, info: &PublishInfo, version: &str, dry_run: bool) -> Result {
-        let PublishInfo {
+    fn publish(&self, info: &AppConfig, version: &str, dry_run: bool) -> Result {
+        let AppConfig {
             name: cli_name,
             description,
             homepage,
@@ -145,7 +147,7 @@ impl Repository for AurBin {
         Ok(())
     }
 
-    fn instructions(&self, info: &PublishInfo) -> Result<Vec<String>> {
+    fn instructions(&self, info: &AppConfig) -> Result<Vec<String>> {
         let name = get_name(info);
 
         Ok(vec![
@@ -158,7 +160,7 @@ impl Repository for AurBin {
     }
 }
 
-pub(super) fn get_name(info: &PublishInfo) -> String {
+pub(super) fn get_name(info: &AppConfig) -> String {
     info.aur_bin
         .as_ref()
         .and_then(|info| info.name.clone())

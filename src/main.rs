@@ -1,21 +1,22 @@
 use std::io::stdout;
 
-mod repositories;
-mod targets;
-
-mod error;
-mod styles;
-
-mod check;
-mod generate;
-mod publish;
-
 use anstream::{AutoStream, ColorChoice};
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 use colorchoice_clap::Color;
 use tracing_log::AsTrace;
 use tracing_subscriber::prelude::*;
+
+mod error;
+mod styles;
+
+mod config;
+mod repositories;
+mod targets;
+
+mod check;
+mod generate;
+mod publish;
 
 /// Tool to publish & distribute CLI tools
 #[derive(Debug, Parser)]

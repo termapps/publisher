@@ -1,13 +1,13 @@
 use std::fs::{read_to_string, write};
 
-use crate::{
-    error::{Error, Result},
-    publish::PublishInfo,
-    repositories::build,
-};
-
 use clap::Parser;
 use tracing::instrument;
+
+use crate::{
+    config::AppConfig,
+    error::{Error, Result},
+    repositories::build,
+};
 
 /// Generates installation instructions
 #[derive(Debug, Parser)]
@@ -30,8 +30,8 @@ pub struct Instructions {
 
 impl Instructions {
     #[instrument(name = "install", skip_all)]
-    pub fn run(self, info: &PublishInfo) -> Result {
-        let PublishInfo {
+    pub fn run(self, info: &AppConfig) -> Result {
+        let AppConfig {
             name,
             repository,
             exclude,

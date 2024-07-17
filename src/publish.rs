@@ -1,20 +1,15 @@
 use std::{fmt::Debug, fs::write};
 
-use crate::{
-    error::Result,
-    repositories::{
-        aur::AurInfo, aur_bin::AurBinInfo, build, homebrew::HomebrewInfo, scoop::ScoopInfo,
-        update_config, Repositories, Repository,
-    },
-};
-
 use clap::Parser;
-use config::{Config, File, FileFormat};
 use owo_colors::OwoColorize;
 use tracing::{info, instrument, warn};
 use xshell::{cmd, Shell};
 
-pub const CONFIG_FILE: &str = "publisher.toml";
+use crate::{
+    config::read_config,
+    error::Result,
+    repositories::{build, update_config, Repositories, Repository},
+};
 
 /// Publish the tool to package repositories
 #[derive(Debug, Parser)]
@@ -28,20 +23,6 @@ pub struct Publish {
     /// Disable dry run mode
     #[clap(long)]
     no_dry_run: bool,
-}
-
-#[derive(Debug, Clone, serde::Deserialize)]
-pub struct PublishInfo {
-    pub name: String,
-    pub description: String,
-    pub homepage: String,
-    pub license: String,
-    pub repository: String,
-    pub exclude: Option<Vec<String>>,
-    pub aur: Option<AurInfo>,
-    pub aur_bin: Option<AurBinInfo>,
-    pub homebrew: Option<HomebrewInfo>,
-    pub scoop: Option<ScoopInfo>,
 }
 
 impl Publish {
@@ -69,13 +50,6 @@ impl Publish {
 
         Ok(())
     }
-}
-
-pub fn read_config() -> Result<PublishInfo> {
-    Ok(Config::builder()
-        .add_source(File::new(CONFIG_FILE, FileFormat::Toml))
-        .build()?
-        .try_deserialize::<PublishInfo>()?)
 }
 
 pub fn prepare_tmp_dir(id: &str) -> Result<(Shell, String)> {
