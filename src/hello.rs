@@ -1,11 +1,11 @@
 use std::io::Write;
 
-use crate::error::{Error, Result};
-
 use anstream::{println, stdout};
 use clap::Parser;
 use owo_colors::OwoColorize;
 use tracing::{debug, instrument};
+
+use crate::error::{Error, Result};
 
 /// Say hello to someone
 #[derive(Debug, Parser)]

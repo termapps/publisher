@@ -1,16 +1,16 @@
 use std::io::stdout;
 
-mod error;
-mod styles;
-
-mod hello;
-
 use anstream::{AutoStream, ColorChoice};
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 use colorchoice_clap::Color;
 use tracing_log::AsTrace;
 use tracing_subscriber::prelude::*;
+
+mod error;
+mod styles;
+
+mod hello;
 
 /// A simple CLI application using clap
 #[derive(Debug, Parser)]

@@ -1,9 +1,4 @@
-name = "cli-clap"
-
-description = "A simple CLI application using clap"
-homepage    = "https://github.com/termapps/cli-clap"
-license     = "MIT"
-repository  = "termapps/cli-clap"
+repository = "termapps/cli-clap"
 
 exclude = ["aur"]
 
