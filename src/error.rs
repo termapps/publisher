@@ -19,6 +19,12 @@ pub enum Error {
     StartMarkerNotFound,
     #[error("Unable to find end marker to place instructions")]
     EndMarkerNotFound,
+    #[error("{0}")]
+    Regex(#[from] regex::Error),
+    #[error("{0}")]
+    Inquire(#[from] inquire::InquireError),
+    #[error("{0}")]
+    Toml(#[from] toml::ser::Error),
     #[error("Unable to parse the configuration file: {0}")]
     Config(#[from] config::ConfigError),
     #[error("Unable to run a command: {0}")]

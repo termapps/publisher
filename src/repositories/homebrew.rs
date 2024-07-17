@@ -1,4 +1,5 @@
 use heck::ToUpperCamelCase;
+use serde::{Deserialize, Serialize};
 use xshell::Shell;
 
 use super::get_checksums;
@@ -11,7 +12,7 @@ use crate::{
     targets::Target,
 };
 
-#[derive(Debug, Clone, Default, serde::Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct HomebrewConfig {
     pub name: Option<String>,
     pub repository: String,

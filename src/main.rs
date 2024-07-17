@@ -16,6 +16,7 @@ mod targets;
 
 mod check;
 mod generate;
+mod init;
 mod publish;
 
 /// Tool to publish & distribute CLI tools
@@ -37,6 +38,7 @@ struct App {
 enum Subcommands {
     Check(check::Check),
     Generate(generate::Generate),
+    Init(init::Init),
     Publish(publish::Publish),
 }
 
@@ -58,6 +60,7 @@ fn main() {
     let result = match program.cmd {
         Subcommands::Check(x) => x.run(),
         Subcommands::Generate(x) => x.run(),
+        Subcommands::Init(x) => x.run(),
         Subcommands::Publish(x) => x.run(),
     };
 

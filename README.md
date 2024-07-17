@@ -26,6 +26,12 @@
 
 > NOTE: Only supports tools hosted in GitHub for now.
 
+Setup publishing configuration. *(Only needed for first time setup)*.
+
+```
+$ publisher init
+```
+
 Setup your CI pipeline to build release artifacts. *(Only needed for first time setup)*.
 
 ```

@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use xshell::{cmd, Shell};
 
 use super::get_checksums;
@@ -10,7 +11,7 @@ use crate::{
     targets::Target,
 };
 
-#[derive(Debug, Clone, Default, serde::Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct AurConfig {
     pub name: Option<String>,
     pub conflicts: Option<Vec<String>>,
