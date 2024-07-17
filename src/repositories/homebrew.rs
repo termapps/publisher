@@ -116,18 +116,28 @@ impl Repository for Homebrew {
 
         let name = get_name(info);
         let tap_org_name = homebrew.repository.split('/').next().unwrap();
-        let tap_name = homebrew
-            .repository
-            .split('/')
-            .last()
-            .unwrap()
-            .trim_start_matches("homebrew-");
+        let tap_name = homebrew.repository.split('/').last().unwrap();
+
+        let contents = if tap_name.starts_with("homebrew-") {
+            format!(
+                "$ brew install {tap_org_name}/{}/{name}",
+                tap_name.trim_start_matches("homebrew-")
+            )
+        } else {
+            vec![
+                format!(
+                    "$ brew tap {tap_org_name}/{tap_name} https://github.com/{tap_org_name}/{tap_name}"
+                ),
+                format!("$ brew install {tap_org_name}/{tap_name}/{name}"),
+            ]
+            .join("\n")
+        };
 
         Ok(vec![
             format!("With [Homebrew](https://brew.sh)"),
             format!(""),
             format!("```"),
-            format!("$ brew install {tap_org_name}/{tap_name}/{name}"),
+            contents,
             format!("```"),
         ])
     }
