@@ -117,16 +117,18 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 
 | Name          |   Type   | Required | Description                                                   |
 | ------------- | :------: | :------: | ------------------------------------------------------------- |
-| `name`        |  string  |   Yes    | Name of the binary                                            |
-| `description` |  string  |   Yes    | Description of the project                                    |
-| `homepage`    |  string  |   Yes    | URL of the project homepage                                   |
-| `license`     |  string  |   Yes    | License                                                       |
+| `name`        |  string  | Yes[^1]  | Name of the binary                                            |
+| `description` |  string  | Yes[^1]  | Description of the project                                    |
+| `homepage`    |  string  | Yes[^1]  | URL of the project homepage                                   |
+| `license`     |  string  | Yes[^1]  | License                                                       |
 | `repository`  |  string  |   Yes    | URI of the GitHub repository (ex: termapps/publisher)         |
 | `exclude`     | string[] |    No    | [Package Repository selection](#package-repository-selection) |
 | `aur`         |  object  |    No    | [AUR](#aur)                                                   |
 | `aur_bin`     |  object  |    No    | [AUR (binary)](#aur-binary)                                   |
 | `homebrew`    |  object  |   Yes    | [Homebrew](#homebrew)                                         |
 | `scoop`       |  object  |   Yes    | [Scoop](#scoop)                                               |
+
+[^1]: If `cargo` binary and `Cargo.toml` file are present, they can be omitted from the config.
 
 <!-- omit from toc -->
 #### AUR

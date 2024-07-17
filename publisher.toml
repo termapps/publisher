@@ -1,9 +1,4 @@
-name = "publisher"
-
-description = "Tool to publish & distribute CLI tools"
-homepage    = "https://github.com/termapps/publisher"
-license     = "MIT"
-repository  = "termapps/publisher"
+repository = "termapps/publisher"
 
 exclude = ["aur"]
 
