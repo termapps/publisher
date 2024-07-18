@@ -1,4 +1,8 @@
-use std::{fmt::Debug, fs::write};
+use std::{
+    fmt::Debug,
+    fs::{create_dir_all, write},
+    path::Path,
+};
 
 use clap::Parser;
 use owo_colors::OwoColorize;
@@ -96,11 +100,17 @@ where
     F: FnOnce() -> Vec<String>,
 {
     let path = path.as_ref();
+    let full_path = Path::new(dir).join(path);
+
+    // Ensure the parent directory exists, otherwise fails on linux
+    if let Some(parent) = full_path.parent() {
+        create_dir_all(parent)?;
+    }
 
     info!("  {} {}", "writing".magenta(), path.cyan());
     let lines = writer();
 
-    write(format!("{dir}/{path}"), format!("{}\n", lines.join("\n")))?;
+    write(full_path, format!("{}\n", lines.join("\n")))?;
     cmd!(sh, "git add {path}").quiet().run()?;
 
     Ok(())
