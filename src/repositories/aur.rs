@@ -103,9 +103,9 @@ impl Repository for Aur {
                 format!("arch=('x86_64' 'i686')"),
                 format!("url={homepage:?}"),
                 format!("license=({license:?})"),
+                format!("makedepends=('cargo')"),
                 format!("provides=({cli_name:?})"),
                 format!("conflicts=({conflicts_pkgbuild})"),
-                format!("makedepends=('cargo')"),
                 format!("source=($pkgname-$pkgver.zip::https://github.com/{repository}/archive/refs/tags/v$pkgver.zip)"),
                 format!("sha256sums=({:?})", checksums.get(&Target::Source).unwrap()),
                 format!(""),
@@ -132,6 +132,7 @@ impl Repository for Aur {
                 format!("\tarch = x86_64"),
                 format!("\tarch = i686"),
                 format!("\tlicense = {license}"),
+                format!("\tmakedepends = cargo"),
                 format!("\tprovides = {cli_name}"),
                 conflicts_srcinfo,
                 format!(
