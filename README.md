@@ -18,29 +18,29 @@ A simple CLI application using clap
 #### With [Homebrew](https://brew.sh)
 
 ```
-$ brew install termapps/tap/cli-clap
+brew install termapps/tap/cli-clap
 ```
 
 <!-- omit from toc -->
 #### With [AUR](https://aur.archlinux.org)
 
 ```
-$ yay -S cli-clap
+yay -S cli-clap
 ```
 
 <!-- omit from toc -->
 #### With [Scoop](https://scoop.sh)
 
 ```
-$ scoop bucket add termapps https://github.com/termapps/scoop-bucket
-$ scoop install cli-clap
+scoop bucket add termapps https://github.com/termapps/scoop-bucket
+scoop install cli-clap
 ```
 
 <!-- omit from toc -->
-#### With [cargo](https://crates.io/)
+#### With [cargo](https://crates.io)
 
 ```
-$ cargo install cli-clap
+cargo install cli-clap
 ```
 
 <!-- omit from toc -->
