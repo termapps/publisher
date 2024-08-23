@@ -84,29 +84,29 @@ Used for building from source:
 #### With [Homebrew](https://brew.sh)
 
 ```
-$ brew install termapps/tap/publisher
+brew install termapps/tap/publisher
 ```
 
 <!-- omit from toc -->
 #### With [AUR](https://aur.archlinux.org)
 
 ```
-$ yay -S publisher
+yay -S publisher
 ```
 
 <!-- omit from toc -->
 #### With [Scoop](https://scoop.sh)
 
 ```
-$ scoop bucket add termapps https://github.com/termapps/scoop-bucket
-$ scoop install publisher
+scoop bucket add termapps https://github.com/termapps/scoop-bucket
+scoop install publisher
 ```
 
 <!-- omit from toc -->
-#### With [cargo](https://crates.io/)
+#### With [cargo](https://crates.io)
 
 ```
-$ cargo install publisher
+cargo install publisher
 ```
 
 <!-- omit from toc -->
