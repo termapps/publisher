@@ -120,15 +120,15 @@ impl Repository for Homebrew {
 
         let contents = if tap_name.starts_with("homebrew-") {
             format!(
-                "$ brew install {tap_org_name}/{}/{name}",
+                "brew install {tap_org_name}/{}/{name}",
                 tap_name.trim_start_matches("homebrew-")
             )
         } else {
             vec![
                 format!(
-                    "$ brew tap {tap_org_name}/{tap_name} https://github.com/{tap_org_name}/{tap_name}"
+                    "brew tap {tap_org_name}/{tap_name} https://github.com/{tap_org_name}/{tap_name}"
                 ),
-                format!("$ brew install {tap_org_name}/{tap_name}/{name}"),
+                format!("brew install {tap_org_name}/{tap_name}/{name}"),
             ]
             .join("\n")
         };

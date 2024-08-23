@@ -158,7 +158,7 @@ impl Repository for Aur {
             format!("With [AUR](https://aur.archlinux.org)"),
             format!(""),
             format!("```"),
-            format!("$ yay -S {name}"),
+            format!("yay -S {name}"),
             format!("```"),
         ])
     }

@@ -155,7 +155,7 @@ impl Repository for AurBin {
             format!("With [AUR (binary)](https://aur.archlinux.org)"),
             format!(""),
             format!("```"),
-            format!("$ yay -S {name}"),
+            format!("yay -S {name}"),
             format!("```"),
         ])
     }

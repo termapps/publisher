@@ -107,10 +107,10 @@ impl Repository for Scoop {
             format!(""),
             format!("```"),
             format!(
-                "$ scoop bucket add {bucket_org_name} https://github.com/{}",
+                "scoop bucket add {bucket_org_name} https://github.com/{}",
                 scoop.repository
             ),
-            format!("$ scoop install {name}"),
+            format!("scoop install {name}"),
             format!("```"),
         ])
     }
