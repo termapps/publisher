@@ -146,6 +146,6 @@ impl Repository for Homebrew {
 fn get_name(info: &AppConfig) -> String {
     info.homebrew
         .as_ref()
-        .and_then(|info| info.name.clone())
+        .and_then(|homebrew| homebrew.name.clone())
         .unwrap_or_else(|| info.name.clone())
 }

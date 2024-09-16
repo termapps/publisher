@@ -142,6 +142,21 @@ pub fn check_curl(sh: &Shell, results: &mut CheckResults) {
     }
 }
 
+pub fn check_nix(sh: &Shell, results: &mut CheckResults) {
+    if !results.has_checked(&"nix") {
+        let output = cmd!(sh, "nix --version").quiet().ignore_status().read();
+
+        results.add_result(
+            "nix",
+            if let Ok(output) = output {
+                (!output.contains("nix (Nix) ")).then_some("nix is not installed")
+            } else {
+                Some("nix is not installed")
+            },
+        );
+    }
+}
+
 pub fn check_repo(
     sh: &Shell,
     remote: &str,

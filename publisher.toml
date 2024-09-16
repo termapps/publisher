@@ -10,3 +10,9 @@ repository = "termapps/homebrew-tap"
 
 [scoop]
 repository = "termapps/scoop-bucket"
+
+[nix]
+repository = "termapps/nixpkgs"
+
+lockfile = false
+path     = "%n.nix"

@@ -164,6 +164,6 @@ impl Repository for AurBin {
 pub(super) fn get_name(info: &AppConfig) -> String {
     info.aur_bin
         .as_ref()
-        .and_then(|info| info.name.clone())
+        .and_then(|aur_bin| aur_bin.name.clone())
         .unwrap_or_else(|| format!("{}-bin", info.name))
 }

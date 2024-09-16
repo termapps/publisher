@@ -167,6 +167,6 @@ impl Repository for Aur {
 pub(super) fn get_name(info: &AppConfig) -> String {
     info.aur
         .as_ref()
-        .and_then(|info| info.name.clone())
+        .and_then(|aur| aur.name.clone())
         .unwrap_or_else(|| info.name.clone())
 }

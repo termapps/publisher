@@ -6,7 +6,8 @@ use xshell::{cmd, Shell};
 use crate::{
     error::Result,
     repositories::{
-        aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig, scoop::ScoopConfig,
+        aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig, nix::NixConfig,
+        scoop::ScoopConfig,
     },
 };
 
@@ -28,6 +29,7 @@ pub struct AppConfig {
     pub aur_bin: Option<AurBinConfig>,
     pub homebrew: Option<HomebrewConfig>,
     pub scoop: Option<ScoopConfig>,
+    pub nix: Option<NixConfig>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]

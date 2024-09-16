@@ -119,6 +119,6 @@ impl Repository for Scoop {
 fn get_name(info: &AppConfig) -> String {
     info.scoop
         .as_ref()
-        .and_then(|info| info.name.clone())
+        .and_then(|scoop| scoop.name.clone())
         .unwrap_or_else(|| info.name.clone())
 }

@@ -6,6 +6,7 @@ use std::{
 pub mod aur;
 pub mod aur_bin;
 pub mod homebrew;
+pub mod nix;
 pub mod scoop;
 
 use clap::ValueEnum;
@@ -29,6 +30,7 @@ pub enum Repositories {
     AurBin,
     Homebrew,
     Scoop,
+    Nix,
 }
 
 impl Display for Repositories {
@@ -44,6 +46,7 @@ impl Repositories {
             Repositories::AurBin => Box::new(aur_bin::AurBin),
             Repositories::Homebrew => Box::new(homebrew::Homebrew),
             Repositories::Scoop => Box::new(scoop::Scoop),
+            Repositories::Nix => Box::new(nix::Nix),
         }
     }
 }

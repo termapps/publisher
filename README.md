@@ -29,38 +29,38 @@
 Setup publishing configuration. *(Only needed for first time setup)*.
 
 ```
-$ publisher init
+publisher init
 ```
 
 Setup your CI pipeline to build release artifacts. *(Only needed for first time setup)*.
 
 ```
-$ publisher generate ci
+publisher generate ci
 ```
 
 Update your code, commit and push to repository with a version tag.
 
 ```
-$ git tag v1.0.0
-$ git push --tags
+git tag v1.0.0
+git push --tags
 ```
 
 Check that you meet all requirements for publishing to configured [package repositories](#package-repositories).
 
 ```
-$ publisher check
+publisher check
 ```
 
 Run the following to publish a version to configured [package repositories](#package-repositories).
 
 ```
-$ publisher publish 1.0.0
+publisher publish 1.0.0
 ```
 
 Discover more subcommands and options.
 
 ```
-$ publisher help
+publisher help
 ```
 
 ## Package Repositories
@@ -70,6 +70,7 @@ Used for installing the built binary:
 - [AUR (binary)](https://aur.archlinux.org)
 - [Homebrew](https://homebrew.sh)
 - [Scoop](https://scoop.sh)
+- [Nix](https://nixos.org)
 
 Used for building from source:
 
@@ -103,6 +104,13 @@ scoop install publisher
 ```
 
 <!-- omit from toc -->
+#### With [Nix](https://nixos.org)
+
+```
+nix profile install github:termapps/nixpkgs#publisher
+```
+
+<!-- omit from toc -->
 #### With [cargo](https://crates.io)
 
 ```
@@ -133,6 +141,7 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 | `aur_bin`     |  object  |    No    | [AUR (binary)](#aur-binary)                                   |
 | `homebrew`    |  object  |   Yes    | [Homebrew](#homebrew)                                         |
 | `scoop`       |  object  |   Yes    | [Scoop](#scoop)                                               |
+| `nix`         |  object  |    No    | [Nix](#nix)                                                   |
 
 [^1]: If `cargo` binary and `Cargo.toml` file are present, they can be omitted from the config.
 
@@ -164,7 +173,7 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 | Name         |   Type   | Required | Description                            |
 | ------------ | :------: | :------: | -------------------------------------- |
 | `name`       |  string  |    No    | Name of the formula                    |
-| `repository` | string[] |   Yes    | GitHub repository for the homebrew tap |
+| `repository` |  string  |   Yes    | GitHub repository for the homebrew tap |
 
 - `name` defaults to the binary name.
 
@@ -174,9 +183,25 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 | Name         |   Type   | Required | Description                            |
 | ------------ | :------: | :------: | -------------------------------------- |
 | `name`       |  string  |    No    | Name of the app                        |
-| `repository` | string[] |   Yes    | GitHub repository for the scoop bucket |
+| `repository` |  string  |   Yes    | GitHub repository for the scoop bucket |
 
 - `name` defaults to the binary name.
+
+<!-- omit from toc -->
+#### Nix
+
+| Name         |   Type   | Required | Description                           |
+| ------------ | :------: | :------: | ------------------------------------- |
+| `name`       |  string  |    No    | Name of the package                   |
+| `repository` |  string  |    No    | GitHub repository for the nix package |
+| `path`       |  string  |    No    | Path of the package in the repo       |
+| `lockfile`   |   bool   |    No    | Whether to update flake lockfile      |
+
+- `name` defaults to the binary name.
+- `repository` defaults to binary's GitHub repository.
+- `path` defaults to `flake.nix`.
+- `%n` can be used in `path` to substitute with name. For example, `%n/flake.nix` creates the package at `publisher/flake.nix` location.
+- `lockfile` defaults to `true` and is needed to install the package most of the time.
 
 <!-- omit from toc -->
 #### Package Repository selection
@@ -193,7 +218,6 @@ Here is a list of [Contributors](http://github.com/termapps/publisher/contributo
 
 - Package repositories
   + Alpine Linux ([#1](https://github.com/termapps/publisher/issues/1))
-  + Nixpkgs ([#10](https://github.com/termapps/publisher/issues/10))
   + Cargo
   + NPM
   + PyPi

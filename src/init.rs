@@ -14,8 +14,8 @@ use crate::{
     config::{read_cargo_config, AppConfig, CONFIG_FILE},
     error::Result,
     repositories::{
-        aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig, scoop::ScoopConfig,
-        Repositories,
+        aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig, nix::NixConfig,
+        scoop::ScoopConfig, Repositories,
     },
 };
 
@@ -70,7 +70,9 @@ impl Init {
                 .with_validator(required!())
                 .prompt()?;
 
-            (aur_name != name).then_some(AurConfig {
+            let different_name = aur_name != name;
+
+            different_name.then_some(AurConfig {
                 name: Some(aur_name),
                 conflicts: None,
             })
@@ -89,7 +91,9 @@ impl Init {
                 .with_validator(required!())
                 .prompt()?;
 
-            (aur_bin_name != package_name).then_some(AurBinConfig {
+            let different_name = aur_bin_name != package_name;
+
+            different_name.then_some(AurBinConfig {
                 name: Some(aur_bin_name),
                 conflicts: None,
             })
@@ -143,6 +147,31 @@ impl Init {
             None
         };
 
+        let nix = if package_repositories.iter().any(|r| *r == Repositories::Nix) {
+            let nix_name = Text::new("Nix package name?")
+                .with_initial_value(&name)
+                .with_validator(required!())
+                .prompt()?;
+
+            let nix_repository = Text::new("Nix package GitHub repository URI?")
+                .with_initial_value(&repository)
+                .with_validator(required!())
+                .with_validator(repo_uri_validator)
+                .prompt()?;
+
+            let different_name = nix_name != name;
+            let different_repo = nix_repository != repository;
+
+            (different_name || different_repo).then_some(NixConfig {
+                name: different_name.then_some(nix_name),
+                repository: different_repo.then_some(nix_repository),
+                path: None,
+                lockfile: None,
+            })
+        } else {
+            None
+        };
+
         let exclude = Repositories::value_variants()
             .iter()
             .filter(|r| !package_repositories.contains(r))
@@ -176,6 +205,7 @@ impl Init {
             aur_bin,
             homebrew,
             scoop,
+            nix,
         };
 
         write(Path::new(CONFIG_FILE), to_string(&config)?)?;
