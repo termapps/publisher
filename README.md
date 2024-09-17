@@ -22,7 +22,7 @@ brew install termapps/tap/cli-clap
 ```
 
 <!-- omit from toc -->
-#### With [AUR](https://aur.archlinux.org)
+#### With [AUR (binary)](https://aur.archlinux.org)
 
 ```
 yay -S cli-clap
@@ -34,6 +34,13 @@ yay -S cli-clap
 ```
 scoop bucket add termapps https://github.com/termapps/scoop-bucket
 scoop install cli-clap
+```
+
+<!-- omit from toc -->
+#### With [Nix](https://nixos.org)
+
+```
+nix profile install github:termapps/nixpkgs#cli-clap
 ```
 
 <!-- omit from toc -->

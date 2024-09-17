@@ -2,11 +2,17 @@ repository = "termapps/cli-clap"
 
 exclude = ["aur"]
 
-[aur_bin]
-name = "cli-clap"
-
 [homebrew]
 repository = "termapps/homebrew-tap"
 
+[aur_bin]
+name = "cli-clap"
+
 [scoop]
 repository = "termapps/scoop-bucket"
+
+[nix]
+repository = "termapps/nixpkgs"
+
+lockfile = false
+path     = "%n.nix"
