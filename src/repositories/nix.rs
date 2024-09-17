@@ -148,7 +148,9 @@ impl Repository for Nix {
                 sh,
                 "nix --extra-experimental-features 'nix-command flakes' flake update"
             )
-            .read()?;
+            .run()?;
+
+            cmd!(sh, "git add flake.lock").quiet().run()?;
         }
 
         if !dry_run {
