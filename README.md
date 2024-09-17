@@ -15,6 +15,13 @@ A simple CLI application using clap
 `cli-clap` is available on Linux, macOS & Windows
 
 <!-- omit from toc -->
+#### With [Cargo](https://crates.io)
+
+```
+cargo install cli-clap
+```
+
+<!-- omit from toc -->
 #### With [Homebrew](https://brew.sh)
 
 ```
@@ -41,13 +48,6 @@ scoop install cli-clap
 
 ```
 nix profile install github:termapps/nixpkgs#cli-clap
-```
-
-<!-- omit from toc -->
-#### With [cargo](https://crates.io)
-
-```
-cargo install cli-clap
 ```
 
 <!-- omit from toc -->
