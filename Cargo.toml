@@ -1,6 +1,6 @@
 [package]
 name    = "publisher"
-version = "0.1.5"
+version = "0.1.6"
 
 authors     = ["Pavan Kumar Sunkara <pavan.sss1991@gmail.com>"]
 description = "Tool to publish & distribute CLI tools"
