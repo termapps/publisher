@@ -1,4 +1,7 @@
-use std::fs::{read_to_string, write};
+use std::{
+    collections::VecDeque,
+    fs::{read_to_string, write},
+};
 
 use clap::Parser;
 use tracing::instrument;
@@ -35,17 +38,32 @@ impl Instructions {
             name,
             repository,
             exclude,
+            cargo,
             ..
         } = info;
 
-        let content = build(&vec![], &exclude.clone().unwrap_or_default())
+        let mut repo_content = build(&vec![], &exclude.clone().unwrap_or_default())
             .into_iter()
             .map(|repo| repo.instructions(info).and_then(|v| Ok(v.join("\n"))))
-            .collect::<Result<Vec<_>>>()?
+            .collect::<Result<VecDeque<_>>>()?;
+
+        if let Some(cargo) = cargo {
+            repo_content.push_front(
+                vec![
+                    format!("With [Cargo](https://crates.io)"),
+                    format!(""),
+                    format!("```"),
+                    format!("cargo install {cargo}"),
+                    format!("```"),
+                ]
+                .join("\n"),
+            );
+        };
+
+        let content = repo_content
             .into_iter()
             .map(|section| format!("{}{section}", self.prefix))
-            .collect::<Vec<_>>()
-            .join("\n\n");
+            .collect::<Vec<_>>();
 
         let mut file_content = read_to_string(&self.file)?;
 
@@ -63,7 +81,7 @@ impl Instructions {
             format!(""),
             format!("`{name}` is available on Linux, macOS & Windows"),
             format!(""),
-            content,
+            content.join("\n\n"),
             format!(""),
             format!("{}Direct", self.prefix),
             format!(""),

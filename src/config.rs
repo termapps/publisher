@@ -25,6 +25,7 @@ pub struct AppConfig {
     pub license: String,
     pub repository: String,
     pub exclude: Option<Vec<String>>,
+    pub cargo: Option<String>,
     pub homebrew: Option<HomebrewConfig>,
     pub aur: Option<AurConfig>,
     pub aur_bin: Option<AurBinConfig>,
@@ -38,6 +39,7 @@ pub struct CargoMetadataPackage {
     pub description: Option<String>,
     pub homepage: Option<String>,
     pub license: Option<String>,
+    pub publish: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
@@ -68,7 +70,11 @@ pub fn read_config() -> Result<AppConfig> {
         .set_default("name", package.name.clone())?
         .set_default("description", package.description.clone())?
         .set_default("homepage", package.homepage.clone())?
-        .set_default("license", package.license.clone())?;
+        .set_default("license", package.license.clone())?
+        .set_default(
+            "cargo",
+            package.publish.is_none().then(|| package.name.clone()),
+        )?;
 
     Ok(builder
         .add_source(File::new(CONFIG_FILE, FileFormat::Toml))

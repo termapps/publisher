@@ -82,6 +82,13 @@ Used for building from source:
 `publisher` is available on Linux, macOS & Windows
 
 <!-- omit from toc -->
+#### With [Cargo](https://crates.io)
+
+```
+cargo install publisher
+```
+
+<!-- omit from toc -->
 #### With [Homebrew](https://brew.sh)
 
 ```
@@ -108,13 +115,6 @@ scoop install publisher
 
 ```
 nix profile install github:termapps/nixpkgs#publisher
-```
-
-<!-- omit from toc -->
-#### With [cargo](https://crates.io)
-
-```
-cargo install publisher
 ```
 
 <!-- omit from toc -->

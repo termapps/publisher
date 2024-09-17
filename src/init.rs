@@ -95,7 +95,7 @@ impl Init {
 
             let different_name = aur_name != name;
 
-            different_name.then_some(AurConfig {
+            different_name.then(|| AurConfig {
                 name: Some(aur_name),
                 conflicts: None,
             })
@@ -116,7 +116,7 @@ impl Init {
 
             let different_name = aur_bin_name != package_name;
 
-            different_name.then_some(AurBinConfig {
+            different_name.then(|| AurBinConfig {
                 name: Some(aur_bin_name),
                 conflicts: None,
             })
@@ -162,7 +162,7 @@ impl Init {
             let different_name = nix_name != name;
             let different_repo = nix_repository != repository;
 
-            (different_name || different_repo).then_some(NixConfig {
+            (different_name || different_repo).then(|| NixConfig {
                 name: different_name.then_some(nix_name),
                 repository: different_repo.then_some(nix_repository),
                 path: None,
@@ -201,9 +201,10 @@ impl Init {
             },
             repository,
             exclude: (!exclude.is_empty()).then_some(exclude),
+            cargo: None,
+            homebrew,
             aur,
             aur_bin,
-            homebrew,
             scoop,
             nix,
         };
