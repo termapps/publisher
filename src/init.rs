@@ -64,6 +64,29 @@ impl Init {
         .with_all_selected_by_default()
         .prompt()?;
 
+        let homebrew = if package_repositories
+            .iter()
+            .any(|r| *r == Repositories::Homebrew)
+        {
+            let homebrew_name = Text::new("Homebrew formula name?")
+                .with_initial_value(&name)
+                .with_validator(required!())
+                .prompt()?;
+
+            let homebrew_repository = Text::new("Homebrew tap GitHub repository URI?")
+                .with_placeholder("termapps/homebrew-tap")
+                .with_validator(required!())
+                .with_validator(repo_uri_validator)
+                .prompt()?;
+
+            Some(HomebrewConfig {
+                name: (homebrew_name != name).then_some(homebrew_name),
+                repository: homebrew_repository,
+            })
+        } else {
+            None
+        };
+
         let aur = if package_repositories.iter().any(|r| *r == Repositories::Aur) {
             let aur_name = Text::new("AUR package name?")
                 .with_initial_value(&name)
@@ -96,29 +119,6 @@ impl Init {
             different_name.then_some(AurBinConfig {
                 name: Some(aur_bin_name),
                 conflicts: None,
-            })
-        } else {
-            None
-        };
-
-        let homebrew = if package_repositories
-            .iter()
-            .any(|r| *r == Repositories::Homebrew)
-        {
-            let homebrew_name = Text::new("Homebrew formula name?")
-                .with_initial_value(&name)
-                .with_validator(required!())
-                .prompt()?;
-
-            let homebrew_repository = Text::new("Homebrew tap GitHub repository URI?")
-                .with_placeholder("termapps/homebrew-tap")
-                .with_validator(required!())
-                .with_validator(repo_uri_validator)
-                .prompt()?;
-
-            Some(HomebrewConfig {
-                name: (homebrew_name != name).then_some(homebrew_name),
-                repository: homebrew_repository,
             })
         } else {
             None

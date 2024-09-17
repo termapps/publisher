@@ -67,8 +67,8 @@ publisher help
 
 Used for installing the built binary:
 
-- [AUR (binary)](https://aur.archlinux.org)
 - [Homebrew](https://homebrew.sh)
+- [AUR (binary)](https://aur.archlinux.org)
 - [Scoop](https://scoop.sh)
 - [Nix](https://nixos.org)
 
@@ -89,7 +89,7 @@ brew install termapps/tap/publisher
 ```
 
 <!-- omit from toc -->
-#### With [AUR](https://aur.archlinux.org)
+#### With [AUR (binary)](https://aur.archlinux.org)
 
 ```
 yay -S publisher
@@ -137,13 +137,23 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 | `license`     |  string  | Yes[^1]  | License                                                       |
 | `repository`  |  string  |   Yes    | URI of the GitHub repository (ex: termapps/publisher)         |
 | `exclude`     | string[] |    No    | [Package Repository selection](#package-repository-selection) |
+| `homebrew`    |  object  |   Yes    | [Homebrew](#homebrew)                                         |
 | `aur`         |  object  |    No    | [AUR](#aur)                                                   |
 | `aur_bin`     |  object  |    No    | [AUR (binary)](#aur-binary)                                   |
-| `homebrew`    |  object  |   Yes    | [Homebrew](#homebrew)                                         |
 | `scoop`       |  object  |   Yes    | [Scoop](#scoop)                                               |
 | `nix`         |  object  |    No    | [Nix](#nix)                                                   |
 
 [^1]: If `cargo` binary and `Cargo.toml` file are present, they can be omitted from the config.
+
+<!-- omit from toc -->
+#### Homebrew
+
+| Name         |   Type   | Required | Description                            |
+| ------------ | :------: | :------: | -------------------------------------- |
+| `name`       |  string  |    No    | Name of the formula                    |
+| `repository` |  string  |   Yes    | GitHub repository for the homebrew tap |
+
+- `name` defaults to the binary name.
 
 <!-- omit from toc -->
 #### AUR
@@ -166,16 +176,6 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 
 - `name` defaults to the binary name concatenated with `-bin`.
 - Automatically adds `AUR` package to `conflicts` if it is selected.
-
-<!-- omit from toc -->
-#### Homebrew
-
-| Name         |   Type   | Required | Description                            |
-| ------------ | :------: | :------: | -------------------------------------- |
-| `name`       |  string  |    No    | Name of the formula                    |
-| `repository` |  string  |   Yes    | GitHub repository for the homebrew tap |
-
-- `name` defaults to the binary name.
 
 <!-- omit from toc -->
 #### Scoop

@@ -24,11 +24,12 @@ pub trait Repository {
     fn instructions(&self, info: &AppConfig) -> Result<Vec<String>>;
 }
 
+// We arrange the repositories in a specific order
 #[derive(Debug, Clone, PartialEq, Eq, ValueEnum)]
 pub enum Repositories {
+    Homebrew,
     Aur,
     AurBin,
-    Homebrew,
     Scoop,
     Nix,
 }
@@ -42,9 +43,9 @@ impl Display for Repositories {
 impl Repositories {
     pub fn build(&self) -> Box<dyn Repository> {
         match self {
+            Repositories::Homebrew => Box::new(homebrew::Homebrew),
             Repositories::Aur => Box::new(aur::Aur),
             Repositories::AurBin => Box::new(aur_bin::AurBin),
-            Repositories::Homebrew => Box::new(homebrew::Homebrew),
             Repositories::Scoop => Box::new(scoop::Scoop),
             Repositories::Nix => Box::new(nix::Nix),
         }

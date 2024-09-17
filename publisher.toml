@@ -2,11 +2,11 @@ repository = "termapps/publisher"
 
 exclude = ["aur"]
 
-[aur_bin]
-name = "publisher"
-
 [homebrew]
 repository = "termapps/homebrew-tap"
+
+[aur_bin]
+name = "publisher"
 
 [scoop]
 repository = "termapps/scoop-bucket"

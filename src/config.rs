@@ -25,9 +25,9 @@ pub struct AppConfig {
     pub license: String,
     pub repository: String,
     pub exclude: Option<Vec<String>>,
+    pub homebrew: Option<HomebrewConfig>,
     pub aur: Option<AurConfig>,
     pub aur_bin: Option<AurBinConfig>,
-    pub homebrew: Option<HomebrewConfig>,
     pub scoop: Option<ScoopConfig>,
     pub nix: Option<NixConfig>,
 }
