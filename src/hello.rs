@@ -2,10 +2,11 @@ use std::io::Write;
 
 use anstream::{println, stdout};
 use clap::Parser;
+use eyre::eyre;
 use owo_colors::OwoColorize;
 use tracing::{debug, instrument};
 
-use crate::error::{Error, Result};
+use crate::error::Result;
 
 /// Say hello to someone
 #[derive(Debug, Parser)]
@@ -18,7 +19,7 @@ impl Hello {
     #[instrument(name = "hello", skip_all)]
     pub fn run(self) -> Result {
         if self.name == "world" {
-            return Err(Error::World);
+            return Err(eyre!("You cannot use cliche"));
         }
 
         println!("Hello, {}!", self.name.yellow());
