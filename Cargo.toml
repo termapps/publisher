@@ -8,7 +8,7 @@ homepage    = "https://github.com/termapps/publisher"
 repository  = "https://github.com/termapps/publisher"
 
 edition      = "2021"
-rust-version = "1.75.0"
+rust-version = "1.79.0"
 
 categories = ["command-line-utilities"]
 license    = "MIT"
@@ -19,9 +19,9 @@ anstream            = "0.6.4"
 clap                = { version = "4.4.7", features = ["derive", "wrap_help"] }
 clap-verbosity-flag = "2.1.0"
 colorchoice-clap    = "1.0.3"
+eyre                = "0.6.12"
 owo-colors          = "3.5.0"
 proc-exit           = "2.0.1"
-thiserror           = "1.0.39"
 tracing             = "0.1.37"
 tracing-log         = { version = "0.1.3", default-features = false, features = ["log-tracer", "std"] }
 tracing-subscriber  = "0.3.16"
