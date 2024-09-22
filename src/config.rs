@@ -1,4 +1,5 @@
 use config::{Config, File, FileFormat};
+use eyre::eyre;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 use xshell::{cmd, Shell};
@@ -78,6 +79,7 @@ pub fn read_config() -> Result<AppConfig> {
 
     Ok(builder
         .add_source(File::new(CONFIG_FILE, FileFormat::Toml))
-        .build()?
+        .build()
+        .map_err(|e| eyre!("Unable to parse the configuration file: {e}"))?
         .try_deserialize::<AppConfig>()?)
 }

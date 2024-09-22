@@ -1,3 +1,4 @@
+use eyre::eyre;
 use heck::ToUpperCamelCase;
 use serde::{Deserialize, Serialize};
 use xshell::Shell;
@@ -6,11 +7,13 @@ use super::get_checksums;
 use crate::{
     check::{check_curl, check_git, check_repo, CheckResults},
     config::AppConfig,
-    error::{Error, Result},
+    error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
     repositories::Repository,
     targets::Target,
 };
+
+const NO_HOMEBREW_CONFIG: &str = "No configuration found for homebrew";
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct HomebrewConfig {
@@ -57,7 +60,7 @@ impl Repository for Homebrew {
             ..
         } = info;
 
-        let homebrew = info.homebrew.as_ref().ok_or(Error::NoHomebrewConfig)?;
+        let homebrew = info.homebrew.as_ref().ok_or(eyre!(NO_HOMEBREW_CONFIG))?;
 
         let name = get_name(info);
         let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{}", homebrew.repository))?;
@@ -112,7 +115,7 @@ impl Repository for Homebrew {
     }
 
     fn instructions(&self, info: &AppConfig) -> Result<Vec<String>> {
-        let homebrew = info.homebrew.as_ref().ok_or(Error::NoHomebrewConfig)?;
+        let homebrew = info.homebrew.as_ref().ok_or(eyre!(NO_HOMEBREW_CONFIG))?;
 
         let name = get_name(info);
         let tap_org_name = homebrew.repository.split('/').next().unwrap();

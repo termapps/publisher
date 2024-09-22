@@ -4,13 +4,10 @@ use std::{
 };
 
 use clap::Parser;
+use eyre::eyre;
 use tracing::instrument;
 
-use crate::{
-    config::AppConfig,
-    error::{Error, Result},
-    repositories::build,
-};
+use crate::{config::AppConfig, error::Result, repositories::build};
 
 /// Generates installation instructions
 #[derive(Debug, Parser)]
@@ -69,11 +66,11 @@ impl Instructions {
 
         let start_index = file_content
             .find(&self.start_marker)
-            .ok_or(Error::StartMarkerNotFound)?;
+            .ok_or(eyre!("Unable to find start marker to place instructions"))?;
 
         let end_index = file_content
             .find(&self.end_marker)
-            .ok_or(Error::EndMarkerNotFound)?;
+            .ok_or(eyre!("Unable to find end marker to place instructions"))?;
 
         let content = vec![
             self.start_marker.clone(),

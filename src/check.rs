@@ -2,12 +2,13 @@ use std::collections::HashMap;
 
 use clap::Parser;
 use owo_colors::OwoColorize;
+use proc_exit::Code;
 use tracing::{info, instrument};
 use xshell::{cmd, Shell};
 
 use crate::{
     config::read_config,
-    error::{Error, Result},
+    error::{exit, Result},
     repositories::{build, Repositories},
 };
 
@@ -64,10 +65,10 @@ impl Check {
         }
 
         if failed {
-            Err(Error::ChecksFailed)
-        } else {
-            Ok(())
+            exit(Code::FAILURE);
         }
+
+        Ok(())
     }
 }
 

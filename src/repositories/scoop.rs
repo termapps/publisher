@@ -1,3 +1,4 @@
+use eyre::eyre;
 use serde::{Deserialize, Serialize};
 use xshell::Shell;
 
@@ -5,11 +6,13 @@ use super::get_checksums;
 use crate::{
     check::{check_curl, check_git, check_repo, CheckResults},
     config::AppConfig,
-    error::{Error, Result},
+    error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
     repositories::Repository,
     targets::Target,
 };
+
+const NO_SCOOP_CONFIG: &str = "No configuration found for scoop";
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct ScoopConfig {
@@ -56,7 +59,7 @@ impl Repository for Scoop {
             ..
         } = info;
 
-        let scoop = info.scoop.as_ref().ok_or(Error::NoScoopConfig)?;
+        let scoop = info.scoop.as_ref().ok_or(eyre!(NO_SCOOP_CONFIG))?;
 
         let name = get_name(info);
         let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{}", scoop.repository))?;
@@ -97,7 +100,7 @@ impl Repository for Scoop {
     }
 
     fn instructions(&self, info: &AppConfig) -> Result<Vec<String>> {
-        let scoop = info.scoop.as_ref().ok_or(Error::NoScoopConfig)?;
+        let scoop = info.scoop.as_ref().ok_or(eyre!(NO_SCOOP_CONFIG))?;
 
         let name = get_name(info);
         let bucket_org_name = scoop.repository.split('/').next().unwrap();

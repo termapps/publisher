@@ -218,7 +218,7 @@ Here is a list of [Contributors](http://github.com/termapps/publisher/contributo
 
 - Package repositories
   + Alpine Linux ([#1](https://github.com/termapps/publisher/issues/1))
-  + Cargo
+  + Debian ([#11](https://github.com/termapps/publisher/issues/11))
   + NPM
   + PyPi
 - Platforms ([#4](https://github.com/termapps/publisher/issues/4))
