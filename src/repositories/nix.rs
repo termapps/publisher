@@ -1,13 +1,12 @@
 use serde::{Deserialize, Serialize};
 use xshell::{Shell, cmd};
 
-use super::get_checksums;
 use crate::{
     check::{CheckResults, check_curl, check_git, check_nix, check_repo},
     config::AppConfig,
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
-    repositories::Repository,
+    repositories::{get_checksums, Repository},
     targets::Target,
 };
 
