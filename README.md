@@ -71,6 +71,7 @@ Used for installing the built binary:
 - [AUR (binary)](https://aur.archlinux.org)
 - [Scoop](https://scoop.sh)
 - [Nix](https://nixos.org)
+- [NPM](https://www.npmjs.com)
 
 Used for building from source:
 
@@ -118,6 +119,13 @@ nix profile install github:termapps/nixpkgs#publisher
 ```
 
 <!-- omit from toc -->
+#### With [NPM](https://npmjs.com)
+
+```
+npm install -g @termapps/publisher
+```
+
+<!-- omit from toc -->
 #### Direct
 
 Pre-built binary executables are available at [releases page](https://github.com/termapps/publisher/releases).
@@ -142,6 +150,7 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 | `aur_bin`     |  object  |    No    | [AUR (binary)](#aur-binary)                                   |
 | `scoop`       |  object  |   Yes    | [Scoop](#scoop)                                               |
 | `nix`         |  object  |    No    | [Nix](#nix)                                                   |
+| `npm`         |  object  |    No    | [NPM](#npm)                                                   |
 
 [^1]: If `cargo` binary and `Cargo.toml` file are present, they can be omitted from the config.
 
@@ -206,6 +215,15 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 - `lockfile` defaults to `true` and is needed to install the package most of the time.
 
 <!-- omit from toc -->
+#### NPM
+
+| Name   |   Type   | Required | Description         |
+| ------ | :------: | :------: | ------------------- |
+| `name` |  string  |    No    | Name of the package |
+
+- `name` defaults to the binary name.
+
+<!-- omit from toc -->
 #### Package Repository selection
 
 - By default, all the available [package repositories](#package-repositories) are selected if not specified in the subcommand.
@@ -221,7 +239,6 @@ Here is a list of [Contributors](http://github.com/termapps/publisher/contributo
 - Package repositories
   + Alpine Linux ([#1](https://github.com/termapps/publisher/issues/1))
   + Debian ([#11](https://github.com/termapps/publisher/issues/11))
-  + NPM
   + PyPi
 - Platforms ([#4](https://github.com/termapps/publisher/issues/4))
 - Shell completions ([#8](https://github.com/termapps/publisher/issues/8))
