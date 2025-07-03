@@ -107,7 +107,7 @@ impl CI {
                 format!("    runs-on: ${{{{ matrix.os }}}}"),
                 format!("    steps:"),
                 format!("      - name: Install rust"),
-                format!("        uses: dtolnay/rust-toolchain@1.75.0"),
+                format!("        uses: dtolnay/rust-toolchain@1.88.0"),
                 format!("        with:"),
                 format!("          target: ${{{{ matrix.target }}}}"),
                 format!("      - name: Install linker"),
@@ -132,6 +132,9 @@ impl CI {
                 format!(
                     "          cp target/${{{{ matrix.target }}}}/release/$NAME LICENSE upload"
                 ),
+                format!("      - name: Make executable"),
+                format!("        if: runner.os != 'Windows'"),
+                format!("        run: chmod +x upload/$NAME"),
                 format!("      - name: Compress artifacts"),
                 format!("        uses: vimtor/action-zip@v1"),
                 format!("        with:"),

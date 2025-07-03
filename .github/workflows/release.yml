@@ -96,6 +96,9 @@ jobs:
         run: |
           mkdir upload
           cp target/${{ matrix.target }}/release/$NAME LICENSE upload
+      - name: Make executable
+        if: runner.os != 'Windows'
+        run: chmod +x upload/$NAME
       - name: Compress artifacts
         uses: vimtor/action-zip@v1
         with:
