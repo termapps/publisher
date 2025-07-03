@@ -38,17 +38,17 @@ impl Check {
 
             info!("{}", name.blue());
 
-            check_results.current = Some(name);
+            check_results.current = Some(name.to_string());
             repository.check(&mut check_results, &config)?;
 
             if !check_results.checks_per_repo[name]
                 .iter()
-                .all(|&check| check_results.checked[check].0.is_none())
+                .all(|check| check_results.checked[check].0.is_none())
             {
                 for check in &check_results.checks_per_repo[name] {
-                    let check_result = check_results.checked[check];
+                    let check_result = &check_results.checked[check];
 
-                    if let Some(msg) = check_result.0 {
+                    if let Some(msg) = &check_result.0 {
                         let status = if check_result.1 {
                             "warn".yellow().to_string()
                         } else {
@@ -74,14 +74,14 @@ impl Check {
 
 #[derive(Debug, Default)]
 pub struct CheckResults {
-    current: Option<&'static str>,
-    checked: HashMap<&'static str, (Option<&'static str>, bool)>,
-    checks_per_repo: HashMap<&'static str, Vec<&'static str>>,
+    current: Option<String>,
+    checked: HashMap<String, (Option<String>, bool)>,
+    checks_per_repo: HashMap<String, Vec<String>>,
 }
 
 impl CheckResults {
-    pub fn has_checked(&mut self, name: &'static str) -> bool {
-        let checked = self.checked.contains_key(name);
+    pub fn has_checked(&mut self, name: &str) -> bool {
+        let checked = self.checked.contains_key(&name.to_string());
 
         if checked {
             self.add_check_to_repo(name);
@@ -90,72 +90,57 @@ impl CheckResults {
         checked
     }
 
-    fn add_check_to_repo(&mut self, name: &'static str) {
+    fn add_check_to_repo(&mut self, name: impl Into<String>) {
         self.checks_per_repo
-            .entry(self.current.unwrap())
+            .entry(self.current.clone().unwrap())
             .or_default()
-            .push(name);
+            .push(name.into());
     }
 
     #[inline]
-    pub fn add_result(&mut self, name: &'static str, result: Option<&'static str>) {
+    pub fn add_result(&mut self, name: &str, result: Option<impl Into<String>>) {
         self.add_result_warn(name, result, false);
     }
 
-    pub fn add_result_warn(
-        &mut self,
-        name: &'static str,
-        result: Option<&'static str>,
-        warn: bool,
-    ) {
-        self.checked.insert(name, (result, warn));
+    pub fn add_result_warn(&mut self, name: &str, result: Option<impl Into<String>>, warn: bool) {
+        self.checked
+            .insert(name.to_string(), (result.map(|s| s.into()), warn));
         self.add_check_to_repo(name);
     }
 }
 
-pub fn check_git(sh: &Shell, results: &mut CheckResults) {
-    if !results.has_checked("git") {
-        let output = cmd!(sh, "git --version").quiet().ignore_status().read();
+pub fn check_program(
+    sh: &Shell,
+    results: &mut CheckResults,
+    program: &str,
+    command: &str,
+    expect: &str,
+) {
+    if !results.has_checked(program) {
+        let output = cmd!(sh, "sh -c {command}").quiet().ignore_status().read();
+        let error = format!("{program} is not installed");
 
         results.add_result(
-            "git",
+            program,
             if let Ok(output) = output {
-                (!output.contains("git version")).then_some("git is not installed")
+                (!output.contains(expect)).then_some(error)
             } else {
-                Some("git is not installed")
+                Some(error)
             },
         );
     }
+}
+
+pub fn check_git(sh: &Shell, results: &mut CheckResults) {
+    check_program(sh, results, "git", "git --version", "git version");
 }
 
 pub fn check_curl(sh: &Shell, results: &mut CheckResults) {
-    if !results.has_checked("curl") {
-        let output = cmd!(sh, "curl --version").quiet().ignore_status().read();
-
-        results.add_result(
-            "curl",
-            if let Ok(output) = output {
-                (!output.contains("curl ")).then_some("curl is not installed")
-            } else {
-                Some("curl is not installed")
-            },
-        );
-    }
+    check_program(sh, results, "curl", "curl --version", "curl ");
 }
 
 pub fn check_nix(sh: &Shell, results: &mut CheckResults) {
-    if !results.has_checked("nix") {
-        let output = cmd!(sh, "nix --version").quiet().ignore_status().read();
-
-        results.add_result(
-            "nix",
-            if let Ok(output) = output {
-                (!output.contains("nix (Nix) ")).then_some("nix is not installed")
-            } else {
-                Some("nix is not installed")
-            },
-        );
-    }
+    check_program(sh, results, "nix", "nix --version", "nix (Nix) ");
 }
 
 pub fn check_repo(
