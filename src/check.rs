@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::remove_dir_all};
 
 use clap::Parser;
 use owo_colors::OwoColorize;
@@ -135,14 +135,6 @@ pub fn check_git(sh: &Shell, results: &mut CheckResults) {
     check_program(sh, results, "git", "git --version", "git version");
 }
 
-pub fn check_curl(sh: &Shell, results: &mut CheckResults) {
-    check_program(sh, results, "curl", "curl --version", "curl ");
-}
-
-pub fn check_nix(sh: &Shell, results: &mut CheckResults) {
-    check_program(sh, results, "nix", "nix --version", "nix (Nix) ");
-}
-
 pub fn check_repo(
     sh: &Shell,
     remote: &str,
@@ -194,7 +186,7 @@ pub fn check_repo(
     let push_result = cmd!(sh, "git push").quiet().read_stderr();
 
     sh.change_dir("..");
-    cmd!(sh, "rm -rf {dir}").quiet().run()?;
+    remove_dir_all(dir)?;
 
     if push_result.is_err() {
         results.add_result(

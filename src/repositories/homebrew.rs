@@ -4,7 +4,7 @@ use xshell::Shell;
 
 use super::get_checksums;
 use crate::{
-    check::{CheckResults, check_curl, check_git, check_repo},
+    check::{CheckResults, check_git, check_repo},
     config::AppConfig,
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
@@ -30,7 +30,6 @@ impl Repository for Homebrew {
         let sh = Shell::new()?;
 
         check_git(&sh, results);
-        check_curl(&sh, results);
 
         let repository = get_repository(info);
 

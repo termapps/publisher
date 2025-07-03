@@ -3,7 +3,7 @@ use xshell::{Shell, cmd};
 
 use super::get_checksums;
 use crate::{
-    check::{CheckResults, check_curl, check_git, check_nix, check_repo},
+    check::{CheckResults, check_git, check_program, check_repo},
     config::AppConfig,
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
@@ -31,7 +31,6 @@ impl Repository for Nix {
         let sh = Shell::new()?;
 
         check_git(&sh, results);
-        check_curl(&sh, results);
 
         let repository = get_repository(info);
 
@@ -46,7 +45,7 @@ impl Repository for Nix {
         let lockfile = get_lockfile(info);
 
         if lockfile {
-            check_nix(&sh, results);
+            check_program(&sh, results, "nix", "nix --version", "nix (Nix) ");
         }
 
         Ok(())

@@ -1,6 +1,6 @@
 use std::{
     fmt::Debug,
-    fs::{create_dir_all, write},
+    fs::{create_dir_all, remove_dir_all, remove_file, write},
     path::Path,
 };
 
@@ -56,12 +56,14 @@ impl Publish {
     }
 }
 
-pub fn prepare_tmp_dir(id: &str) -> Result<(Shell, String)> {
+pub fn prepare_tmp_dir(repository: &dyn Repository) -> Result<(Shell, String)> {
+    let id = repository.name();
+
     let sh = Shell::new()?;
     let dir = format!("/tmp/publisher/{id}");
 
-    cmd!(sh, "rm -rf {dir}").quiet().run()?;
-    cmd!(sh, "mkdir -p {dir}").quiet().run()?;
+    remove_dir_all(&dir)?;
+    create_dir_all(&dir)?;
 
     sh.change_dir(&dir);
 
@@ -69,8 +71,7 @@ pub fn prepare_tmp_dir(id: &str) -> Result<(Shell, String)> {
 }
 
 pub fn prepare_git_repo(repository: &dyn Repository, remote: &str) -> Result<(Shell, String)> {
-    let id = repository.name();
-    let (sh, dir) = prepare_tmp_dir(id)?;
+    let (sh, dir) = prepare_tmp_dir(repository)?;
 
     cmd!(sh, "git init").quiet().ignore_stdout().run()?;
     cmd!(sh, "git remote add origin {remote}")
@@ -95,7 +96,7 @@ pub fn prepare_git_repo(repository: &dyn Repository, remote: &str) -> Result<(Sh
     Ok((sh, dir))
 }
 
-pub fn write_and_add<P, F>(sh: &Shell, dir: &str, path: P, writer: F) -> Result
+pub fn write_file<P, F>(dir: &str, path: P, writer: F) -> Result
 where
     P: AsRef<str> + Debug,
     F: FnOnce() -> Vec<String>,
@@ -108,10 +109,23 @@ where
         create_dir_all(parent)?;
     }
 
-    info!("  {} {}", "writing".magenta(), path.cyan());
+    info!("  {:>11} {}", "writing".magenta(), path.cyan());
     let lines = writer();
 
     write(full_path, format!("{}\n", lines.join("\n")))?;
+
+    Ok(())
+}
+
+pub fn write_and_add<P, F>(sh: &Shell, dir: &str, path: P, writer: F) -> Result
+where
+    P: AsRef<str> + Debug,
+    F: FnOnce() -> Vec<String>,
+{
+    let path = path.as_ref();
+
+    write_file(dir, path, writer)?;
+
     cmd!(sh, "git add {path}").quiet().run()?;
 
     Ok(())

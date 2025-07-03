@@ -10,7 +10,7 @@ pub mod nix;
 pub mod scoop;
 
 use clap::ValueEnum;
-use xshell::{Shell, cmd};
+use reqwest::blocking::get;
 
 use crate::{check::CheckResults, config::AppConfig, error::Result, targets::Target};
 
@@ -111,7 +111,6 @@ fn get_checksums(
         name, repository, ..
     } = info;
 
-    let sh = Shell::new()?;
     let download_url =
         format!("https://github.com/{repository}/releases/download/v{version}/{name}-v{version}");
 
@@ -124,9 +123,7 @@ fn get_checksums(
                 format!("")
             };
 
-            let checksum = cmd!(sh, "curl -L {download_url}{target_str}_sha256sum.txt")
-                .ignore_stderr()
-                .read()?;
+            let checksum = get(format!("{download_url}{target_str}_sha256sum.txt"))?.text()?;
 
             Ok((target, checksum))
         })
