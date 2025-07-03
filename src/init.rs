@@ -14,7 +14,7 @@ use crate::{
     error::Result,
     repositories::{
         Repositories, aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig,
-        nix::NixConfig, scoop::ScoopConfig,
+        nix::NixConfig, npm::NPMConfig, scoop::ScoopConfig,
     },
 };
 
@@ -168,6 +168,21 @@ impl Init {
             None
         };
 
+        let npm = if package_repositories.contains(&Repositories::NPM) {
+            let npm_name = Text::new("NPM package name?")
+                .with_initial_value(&name)
+                .with_validator(required!())
+                .prompt()?;
+
+            let different_name = npm_name != name;
+
+            different_name.then_some(NPMConfig {
+                name: Some(npm_name),
+            })
+        } else {
+            None
+        };
+
         let exclude = Repositories::value_variants()
             .iter()
             .filter(|r| !package_repositories.contains(r))
@@ -203,6 +218,7 @@ impl Init {
             aur_bin,
             scoop,
             nix,
+            npm,
         };
 
         write(Path::new(CONFIG_FILE), to_string(&config)?)?;
