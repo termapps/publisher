@@ -1,3 +1,5 @@
+#![allow(clippy::useless_format)]
+
 use std::io::stdout;
 
 use anstream::{AutoStream, ColorChoice};

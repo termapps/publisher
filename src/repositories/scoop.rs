@@ -4,7 +4,7 @@ use xshell::Shell;
 
 use super::get_checksums;
 use crate::{
-    check::{check_curl, check_git, check_repo, CheckResults},
+    check::{CheckResults, check_curl, check_git, check_repo},
     config::AppConfig,
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
@@ -79,12 +79,22 @@ impl Repository for Scoop {
                 format!("  \"license\": {license:?},"),
                 format!("  \"architecture\": {{"),
                 format!("    \"64bit\": {{"),
-                format!("      \"url\": \"https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-x86_64-pc-windows-msvc.zip\","),
-                format!("      \"hash\": {:?}", checksums.get(&Target::X86_64PcWindowsMsvc).unwrap()),
+                format!(
+                    "      \"url\": \"https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-x86_64-pc-windows-msvc.zip\","
+                ),
+                format!(
+                    "      \"hash\": {:?}",
+                    checksums.get(&Target::X86_64PcWindowsMsvc).unwrap()
+                ),
                 format!("    }},"),
                 format!("    \"32bit\": {{"),
-                format!("      \"url\": \"https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-i686-pc-windows-msvc.zip\","),
-                format!("      \"hash\": {:?}", checksums.get(&Target::I686PcWindowsMsvc).unwrap()),
+                format!(
+                    "      \"url\": \"https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-i686-pc-windows-msvc.zip\","
+                ),
+                format!(
+                    "      \"hash\": {:?}",
+                    checksums.get(&Target::I686PcWindowsMsvc).unwrap()
+                ),
                 format!("    }}"),
                 format!("  }},"),
                 format!("  \"bin\": [\"{cli_name}.exe\"]"),

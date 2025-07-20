@@ -10,7 +10,7 @@ pub mod nix;
 pub mod scoop;
 
 use clap::ValueEnum;
-use xshell::{cmd, Shell};
+use xshell::{Shell, cmd};
 
 use crate::{check::CheckResults, config::AppConfig, error::Result, targets::Target};
 

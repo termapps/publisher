@@ -4,12 +4,12 @@ use clap::Parser;
 use owo_colors::OwoColorize;
 use proc_exit::Code;
 use tracing::{info, instrument};
-use xshell::{cmd, Shell};
+use xshell::{Shell, cmd};
 
 use crate::{
     config::read_config,
-    error::{exit, Result},
-    repositories::{build, Repositories},
+    error::{Result, exit},
+    repositories::{Repositories, build},
 };
 
 /// Check requirements for publishing to package repositories
@@ -114,7 +114,7 @@ impl CheckResults {
 }
 
 pub fn check_git(sh: &Shell, results: &mut CheckResults) {
-    if !results.has_checked(&"git") {
+    if !results.has_checked("git") {
         let output = cmd!(sh, "git --version").quiet().ignore_status().read();
 
         results.add_result(
@@ -129,7 +129,7 @@ pub fn check_git(sh: &Shell, results: &mut CheckResults) {
 }
 
 pub fn check_curl(sh: &Shell, results: &mut CheckResults) {
-    if !results.has_checked(&"curl") {
+    if !results.has_checked("curl") {
         let output = cmd!(sh, "curl --version").quiet().ignore_status().read();
 
         results.add_result(
@@ -144,7 +144,7 @@ pub fn check_curl(sh: &Shell, results: &mut CheckResults) {
 }
 
 pub fn check_nix(sh: &Shell, results: &mut CheckResults) {
-    if !results.has_checked(&"nix") {
+    if !results.has_checked("nix") {
         let output = cmd!(sh, "nix --version").quiet().ignore_status().read();
 
         results.add_result(

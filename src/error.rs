@@ -1,7 +1,7 @@
 use std::io::Write;
 
 use anstream::{eprintln, stderr, stdout};
-use eyre::{eyre, Result as EyreResult};
+use eyre::{Result as EyreResult, eyre};
 use owo_colors::OwoColorize;
 use proc_exit::Code;
 

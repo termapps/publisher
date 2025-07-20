@@ -39,14 +39,14 @@ impl Instructions {
             ..
         } = info;
 
-        let mut repo_content = build(&vec![], &exclude.clone().unwrap_or_default())
+        let mut repo_content = build(&[], &exclude.clone().unwrap_or_default())
             .into_iter()
-            .map(|repo| repo.instructions(info).and_then(|v| Ok(v.join("\n"))))
+            .map(|repo| repo.instructions(info).map(|v| v.join("\n")))
             .collect::<Result<VecDeque<_>>>()?;
 
         if let Some(cargo) = cargo {
             repo_content.push_front(
-                vec![
+                [
                     format!("With [Cargo](https://crates.io)"),
                     format!(""),
                     format!("```"),

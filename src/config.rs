@@ -2,7 +2,7 @@ use config::{Config, File, FileFormat};
 use eyre::eyre;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
-use xshell::{cmd, Shell};
+use xshell::{Shell, cmd};
 
 use crate::{
     error::Result,
@@ -61,7 +61,7 @@ pub fn read_cargo_config() -> Result<CargoMetadataPackage> {
 
     let metadata = from_str::<CargoMetadata>(&metadata).unwrap_or_default();
 
-    Ok(metadata.packages.get(0).cloned().unwrap_or_default())
+    Ok(metadata.packages.first().cloned().unwrap_or_default())
 }
 
 pub fn read_config() -> Result<AppConfig> {

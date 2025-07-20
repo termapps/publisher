@@ -7,12 +7,12 @@ use std::{
 use clap::Parser;
 use owo_colors::OwoColorize;
 use tracing::{info, instrument, warn};
-use xshell::{cmd, Shell};
+use xshell::{Shell, cmd};
 
 use crate::{
     config::read_config,
     error::Result,
-    repositories::{build, update_config, Repositories, Repository},
+    repositories::{Repositories, Repository, build, update_config},
 };
 
 /// Publish the tool to package repositories
@@ -79,10 +79,11 @@ pub fn prepare_git_repo(repository: &dyn Repository, remote: &str) -> Result<(Sh
         .run()?;
     cmd!(sh, "git fetch origin").quiet().ignore_stderr().run()?;
 
-    if let Ok(_) = cmd!(sh, "git ls-remote --exit-code --heads origin master")
+    if cmd!(sh, "git ls-remote --exit-code --heads origin master")
         .quiet()
         .ignore_stdout()
         .run()
+        .is_ok()
     {
         cmd!(sh, "git checkout master")
             .quiet()

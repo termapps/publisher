@@ -2,20 +2,19 @@ use std::{error::Error as StdError, fs::write, path::Path, result::Result as Std
 
 use clap::{Parser, ValueEnum};
 use inquire::{
-    required,
+    MultiSelect, Text, required,
     validator::{ErrorMessage, Validation},
-    MultiSelect, Text,
 };
 use regex::Regex;
 use toml::to_string;
 use tracing::instrument;
 
 use crate::{
-    config::{read_cargo_config, AppConfig, CONFIG_FILE},
+    config::{AppConfig, CONFIG_FILE, read_cargo_config},
     error::Result,
     repositories::{
-        aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig, nix::NixConfig,
-        scoop::ScoopConfig, Repositories,
+        Repositories, aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig,
+        nix::NixConfig, scoop::ScoopConfig,
     },
 };
 
@@ -64,10 +63,7 @@ impl Init {
         .with_all_selected_by_default()
         .prompt()?;
 
-        let homebrew = if package_repositories
-            .iter()
-            .any(|r| *r == Repositories::Homebrew)
-        {
+        let homebrew = if package_repositories.contains(&Repositories::Homebrew) {
             let homebrew_name = Text::new("Homebrew formula name?")
                 .with_initial_value(&name)
                 .with_validator(required!())
@@ -87,7 +83,7 @@ impl Init {
             None
         };
 
-        let aur = if package_repositories.iter().any(|r| *r == Repositories::Aur) {
+        let aur = if package_repositories.contains(&Repositories::Aur) {
             let aur_name = Text::new("AUR package name?")
                 .with_initial_value(&name)
                 .with_validator(required!())
@@ -95,7 +91,7 @@ impl Init {
 
             let different_name = aur_name != name;
 
-            different_name.then(|| AurConfig {
+            different_name.then_some(AurConfig {
                 name: Some(aur_name),
                 conflicts: None,
             })
@@ -103,10 +99,7 @@ impl Init {
             None
         };
 
-        let aur_bin = if package_repositories
-            .iter()
-            .any(|r| *r == Repositories::AurBin)
-        {
+        let aur_bin = if package_repositories.contains(&Repositories::AurBin) {
             let package_name = format!("{name}-bin");
 
             let aur_bin_name = Text::new("AUR (bin) package name?")
@@ -116,7 +109,7 @@ impl Init {
 
             let different_name = aur_bin_name != package_name;
 
-            different_name.then(|| AurBinConfig {
+            different_name.then_some(AurBinConfig {
                 name: Some(aur_bin_name),
                 conflicts: None,
             })
@@ -124,10 +117,7 @@ impl Init {
             None
         };
 
-        let scoop = if package_repositories
-            .iter()
-            .any(|r| *r == Repositories::Scoop)
-        {
+        let scoop = if package_repositories.contains(&Repositories::Scoop) {
             let scoop_name = Text::new("Scoop app name?")
                 .with_initial_value(&name)
                 .with_validator(required!())
@@ -147,7 +137,7 @@ impl Init {
             None
         };
 
-        let nix = if package_repositories.iter().any(|r| *r == Repositories::Nix) {
+        let nix = if package_repositories.contains(&Repositories::Nix) {
             let nix_name = Text::new("Nix package name?")
                 .with_initial_value(&name)
                 .with_validator(required!())
@@ -162,7 +152,7 @@ impl Init {
             let different_name = nix_name != name;
             let different_repo = nix_repository != repository;
 
-            (different_name || different_repo).then(|| NixConfig {
+            (different_name || different_repo).then_some(NixConfig {
                 name: different_name.then_some(nix_name),
                 repository: different_repo.then_some(nix_repository),
                 path: None,

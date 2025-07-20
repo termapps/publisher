@@ -5,7 +5,7 @@ use xshell::Shell;
 
 use super::get_checksums;
 use crate::{
-    check::{check_curl, check_git, check_repo, CheckResults},
+    check::{CheckResults, check_curl, check_git, check_repo},
     config::AppConfig,
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
@@ -85,15 +85,30 @@ impl Repository for Homebrew {
                 format!(""),
                 format!("  if OS.mac?"),
                 format!("    if Hardware::CPU.arm?"),
-                format!("      url \"https://github.com/{repository}/releases/download/v#{{version}}/{cli_name}-v#{{version}}-aarch64-apple-darwin.zip\""),
-                format!("      sha256 {:?}", checksums.get(&Target::Aarch64AppleDarwin).unwrap()),
+                format!(
+                    "      url \"https://github.com/{repository}/releases/download/v#{{version}}/{cli_name}-v#{{version}}-aarch64-apple-darwin.zip\""
+                ),
+                format!(
+                    "      sha256 {:?}",
+                    checksums.get(&Target::Aarch64AppleDarwin).unwrap()
+                ),
                 format!("    else"),
-                format!("      url \"https://github.com/{repository}/releases/download/v#{{version}}/{cli_name}-v#{{version}}-x86_64-apple-darwin.zip\""),
-                format!("      sha256 {:?}", checksums.get(&Target::X86_64AppleDarwin).unwrap()),
+                format!(
+                    "      url \"https://github.com/{repository}/releases/download/v#{{version}}/{cli_name}-v#{{version}}-x86_64-apple-darwin.zip\""
+                ),
+                format!(
+                    "      sha256 {:?}",
+                    checksums.get(&Target::X86_64AppleDarwin).unwrap()
+                ),
                 format!("    end"),
                 format!("  elsif OS.linux?"),
-                format!("     url \"https://github.com/{repository}/releases/download/v#{{version}}/{cli_name}-v#{{version}}-x86_64-unknown-linux-gnu.zip\""),
-                format!("     sha256 {:?}", checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()),
+                format!(
+                    "     url \"https://github.com/{repository}/releases/download/v#{{version}}/{cli_name}-v#{{version}}-x86_64-unknown-linux-gnu.zip\""
+                ),
+                format!(
+                    "     sha256 {:?}",
+                    checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()
+                ),
                 format!("  end"),
                 format!(""),
                 format!("  def install"),
@@ -119,7 +134,7 @@ impl Repository for Homebrew {
 
         let name = get_name(info);
         let tap_org_name = homebrew.repository.split('/').next().unwrap();
-        let tap_name = homebrew.repository.split('/').last().unwrap();
+        let tap_name = homebrew.repository.split('/').next_back().unwrap();
 
         let contents = if tap_name.starts_with("homebrew-") {
             format!(
@@ -127,7 +142,7 @@ impl Repository for Homebrew {
                 tap_name.trim_start_matches("homebrew-")
             )
         } else {
-            vec![
+            [
                 format!(
                     "brew tap {tap_org_name}/{tap_name} https://github.com/{tap_org_name}/{tap_name}"
                 ),

@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
-use xshell::{cmd, Shell};
+use xshell::{Shell, cmd};
 
 use super::get_checksums;
 use crate::{
-    check::{check_curl, check_git, check_nix, check_repo, CheckResults},
+    check::{CheckResults, check_curl, check_git, check_nix, check_repo},
     config::AppConfig,
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
@@ -65,7 +65,7 @@ impl Repository for Nix {
         let pkg_repo = get_repository(info);
         let path = get_path(info, &name);
         let lockfile = get_lockfile(info);
-        let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{}", pkg_repo))?;
+        let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{pkg_repo}"))?;
 
         let checksums = get_checksums(
             info,
@@ -96,19 +96,31 @@ impl Repository for Nix {
                 format!("      systems = {{"),
                 format!("        aarch64-darwin = {{"),
                 format!("          target = \"aarch64-apple-darwin\";"),
-                format!("          sha256 = {:?};", checksums.get(&Target::Aarch64AppleDarwin).unwrap()),
+                format!(
+                    "          sha256 = {:?};",
+                    checksums.get(&Target::Aarch64AppleDarwin).unwrap()
+                ),
                 format!("        }};"),
                 format!("        x86_64-darwin = {{"),
                 format!("          target = \"x86_64-apple-darwin\";"),
-                format!("          sha256 = {:?};", checksums.get(&Target::X86_64AppleDarwin).unwrap()),
+                format!(
+                    "          sha256 = {:?};",
+                    checksums.get(&Target::X86_64AppleDarwin).unwrap()
+                ),
                 format!("        }};"),
                 format!("        x86_64-linux = {{"),
                 format!("          target = \"x86_64-unknown-linux-gnu\";"),
-                format!("          sha256 = {:?};", checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()),
+                format!(
+                    "          sha256 = {:?};",
+                    checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()
+                ),
                 format!("        }};"),
                 format!("        i686-linux = {{"),
                 format!("          target = \"i686-unknown-linux-gnu\";"),
-                format!("          sha256 = {:?};", checksums.get(&Target::I686UnknownLinuxGnu).unwrap()),
+                format!(
+                    "          sha256 = {:?};",
+                    checksums.get(&Target::I686UnknownLinuxGnu).unwrap()
+                ),
                 format!("        }};"),
                 format!("      }};"),
                 format!("    in eachSystem (mapAttrsToList (n: v: n) systems) (system: {{"),
@@ -121,7 +133,9 @@ impl Repository for Nix {
                 format!("          nativeBuildInputs = [ unzip ];"),
                 format!(""),
                 format!("          src = pkgs.fetchurl {{"),
-                format!("            url = \"https://github.com/{repository}/releases/download/v${{version}}/{cli_name}-v${{version}}-${{systems.${{system}}.target}}.zip\";"),
+                format!(
+                    "            url = \"https://github.com/{repository}/releases/download/v${{version}}/{cli_name}-v${{version}}-${{systems.${{system}}.target}}.zip\";"
+                ),
                 format!("            inherit (systems.${{system}}) sha256;"),
                 format!("          }};"),
                 format!(""),
@@ -129,7 +143,9 @@ impl Repository for Nix {
                 format!(""),
                 format!("          installPhase = ''"),
                 format!("            install -Dm755 {cli_name} $out/bin/{cli_name}"),
-                format!("            install -Dm755 LICENSE $out/share/licenses/{cli_name}/LICENSE"),
+                format!(
+                    "            install -Dm755 LICENSE $out/share/licenses/{cli_name}/LICENSE"
+                ),
                 format!("          '';"),
                 format!(""),
                 format!("          meta = {{"),
@@ -165,7 +181,7 @@ impl Repository for Nix {
         let repository = get_repository(info);
         let path = get_path(info, &name);
 
-        let mut contents = format!("nix profile install github:{}", repository);
+        let mut contents = format!("nix profile install github:{repository}");
 
         if path != "flake.nix" {
             contents = format!("{contents}#{name}")
@@ -195,7 +211,7 @@ fn get_repository(info: &AppConfig) -> String {
         .unwrap_or_else(|| info.repository.clone())
 }
 
-fn get_path(info: &AppConfig, name: &String) -> String {
+fn get_path(info: &AppConfig, name: &str) -> String {
     info.nix
         .as_ref()
         .and_then(|nix| nix.path.clone())

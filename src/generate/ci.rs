@@ -16,7 +16,7 @@ impl CI {
             ..
         } = info;
 
-        let name = if repository.split('/').last().unwrap() == cli_name {
+        let name = if repository.split('/').next_back().unwrap() == cli_name {
             "${{ github.event.repository.name }}"
         } else {
             cli_name
@@ -52,7 +52,9 @@ impl CI {
                 format!("    name: Read version"),
                 format!("    runs-on: ubuntu-latest"),
                 format!("    outputs:"),
-                format!("      source_name: ${{{{ env.NAME }}}}-${{{{ steps.version.outputs.VERSION }}}}"),
+                format!(
+                    "      source_name: ${{{{ env.NAME }}}}-${{{{ steps.version.outputs.VERSION }}}}"
+                ),
                 format!("    steps:"),
                 format!("      - name: Read version"),
                 format!("        id: version"),
@@ -66,7 +68,9 @@ impl CI {
                 format!("    steps:"),
                 format!("      - name: Calculate checksum"),
                 format!("        run: |"),
-                format!("          curl -sL ${{{{ github.event.repository.html_url }}}}/archive/${{{{ github.ref }}}}.zip > upload.zip"),
+                format!(
+                    "          curl -sL ${{{{ github.event.repository.html_url }}}}/archive/${{{{ github.ref }}}}.zip > upload.zip"
+                ),
                 format!("          echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt"),
                 format!("      - name: Upload checksums"),
                 format!("        uses: actions/upload-release-asset@v1"),
@@ -75,7 +79,9 @@ impl CI {
                 format!("        with:"),
                 format!("          upload_url: ${{{{ needs.create-release.outputs.upload_url }}}}"),
                 format!("          asset_path: ./sha256sum.txt"),
-                format!("          asset_name: ${{{{ needs.read-version.outputs.source_name }}}}_sha256sum.txt"),
+                format!(
+                    "          asset_name: ${{{{ needs.read-version.outputs.source_name }}}}_sha256sum.txt"
+                ),
                 format!("          asset_content_type: text/plain"),
                 format!("  build-upload:"),
                 format!("    name: Build & Upload"),
@@ -116,12 +122,16 @@ impl CI {
                 format!("      - name: Set variables"),
                 format!("        id: vars"),
                 format!("        env:"),
-                format!("          BUILD_NAME: ${{{{ needs.read-version.outputs.source_name }}}}-${{{{ matrix.target }}}}"),
+                format!(
+                    "          BUILD_NAME: ${{{{ needs.read-version.outputs.source_name }}}}-${{{{ matrix.target }}}}"
+                ),
                 format!("        run: echo \"BUILD_NAME=$BUILD_NAME\" >> $GITHUB_OUTPUT"),
                 format!("      - name: Ready artifacts"),
                 format!("        run: |"),
                 format!("          mkdir upload"),
-                format!("          cp target/${{{{ matrix.target }}}}/release/$NAME LICENSE upload"),
+                format!(
+                    "          cp target/${{{{ matrix.target }}}}/release/$NAME LICENSE upload"
+                ),
                 format!("      - name: Compress artifacts"),
                 format!("        uses: vimtor/action-zip@v1"),
                 format!("        with:"),
@@ -139,10 +149,14 @@ impl CI {
                 format!("          asset_content_type: application/zip"),
                 format!("      - name: Calculate checksum"),
                 format!("        if: runner.os == 'macOS'"),
-                format!("        run: echo $(shasum -a 256 upload.zip | cut -d ' ' -f 1) > sha256sum.txt"),
+                format!(
+                    "        run: echo $(shasum -a 256 upload.zip | cut -d ' ' -f 1) > sha256sum.txt"
+                ),
                 format!("      - name: Calculate checksum"),
                 format!("        if: runner.os != 'macOS'"),
-                format!("        run: echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt"),
+                format!(
+                    "        run: echo $(sha256sum upload.zip | cut -d ' ' -f 1) > sha256sum.txt"
+                ),
                 format!("      - name: Upload checksums"),
                 format!("        uses: actions/upload-release-asset@v1"),
                 format!("        env:"),
@@ -150,7 +164,9 @@ impl CI {
                 format!("        with:"),
                 format!("          upload_url: ${{{{ needs.create-release.outputs.upload_url }}}}"),
                 format!("          asset_path: ./sha256sum.txt"),
-                format!("          asset_name: ${{{{ steps.vars.outputs.BUILD_NAME }}}}_sha256sum.txt"),
+                format!(
+                    "          asset_name: ${{{{ steps.vars.outputs.BUILD_NAME }}}}_sha256sum.txt"
+                ),
                 format!("          asset_content_type: text/plain"),
             ]
         })?;

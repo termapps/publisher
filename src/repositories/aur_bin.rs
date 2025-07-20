@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
-use xshell::{cmd, Shell};
+use xshell::{Shell, cmd};
 
 use super::get_checksums;
 use crate::{
-    check::{check_curl, check_git, check_repo, CheckResults},
+    check::{CheckResults, check_curl, check_git, check_repo},
     config::AppConfig,
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
@@ -42,7 +42,7 @@ impl Repository for AurBin {
             (!ssh_configured).then_some("AUR SSH access is not configured"),
         );
 
-        let name = get_name(&info);
+        let name = get_name(info);
 
         check_repo(
             &sh,
@@ -107,15 +107,27 @@ impl Repository for AurBin {
                 format!("license=({license:?})"),
                 format!("provides=({cli_name:?})"),
                 format!("conflicts=({conflicts_pkgbuild})"),
-                format!("source_x86_64=($pkgname-$pkgver.zip::https://github.com/{repository}/releases/download/v$pkgver/{cli_name}-v$pkgver-x86_64-unknown-linux-gnu.zip)"),
-                format!("sha256sums_x86_64=({:?})", checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()),
-                format!("source_i686=($pkgname-$pkgver.zip::https://github.com/{repository}/releases/download/v$pkgver/{cli_name}-v$pkgver-i686-unknown-linux-gnu.zip)"),
-                format!("sha256sums_i686=({:?})", checksums.get(&Target::I686UnknownLinuxGnu).unwrap()),
+                format!(
+                    "source_x86_64=($pkgname-$pkgver.zip::https://github.com/{repository}/releases/download/v$pkgver/{cli_name}-v$pkgver-x86_64-unknown-linux-gnu.zip)"
+                ),
+                format!(
+                    "sha256sums_x86_64=({:?})",
+                    checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()
+                ),
+                format!(
+                    "source_i686=($pkgname-$pkgver.zip::https://github.com/{repository}/releases/download/v$pkgver/{cli_name}-v$pkgver-i686-unknown-linux-gnu.zip)"
+                ),
+                format!(
+                    "sha256sums_i686=({:?})",
+                    checksums.get(&Target::I686UnknownLinuxGnu).unwrap()
+                ),
                 format!(""),
                 format!("package() {{"),
                 format!("    cd \"$srcdir\""),
                 format!("    install -Dm755 \"{cli_name}\" \"$pkgdir/usr/bin/{cli_name}\""),
-                format!("    install -Dm644 \"LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""),
+                format!(
+                    "    install -Dm644 \"LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""
+                ),
                 format!("}}"),
             ]
         })?;
@@ -132,10 +144,20 @@ impl Repository for AurBin {
                 format!("\tlicense = {license}"),
                 format!("\tprovides = {cli_name}"),
                 conflicts_srcinfo,
-                format!("\tsource_x86_64 = {name}-{version}.zip::https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-x86_64-unknown-linux-gnu.zip"),
-                format!("\tsha256sums_x86_64 = {}", checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()),
-                format!("\tsource_i686 = {name}-{version}.zip::https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-i686-unknown-linux-gnu.zip"),
-                format!("\tsha256sums_i686 = {}", checksums.get(&Target::I686UnknownLinuxGnu).unwrap()),
+                format!(
+                    "\tsource_x86_64 = {name}-{version}.zip::https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-x86_64-unknown-linux-gnu.zip"
+                ),
+                format!(
+                    "\tsha256sums_x86_64 = {}",
+                    checksums.get(&Target::X86_64UnknownLinuxGnu).unwrap()
+                ),
+                format!(
+                    "\tsource_i686 = {name}-{version}.zip::https://github.com/{repository}/releases/download/v{version}/{cli_name}-v{version}-i686-unknown-linux-gnu.zip"
+                ),
+                format!(
+                    "\tsha256sums_i686 = {}",
+                    checksums.get(&Target::I686UnknownLinuxGnu).unwrap()
+                ),
                 format!(""),
                 format!("pkgname = {name}"),
             ]

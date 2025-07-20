@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
-use xshell::{cmd, Shell};
+use xshell::{Shell, cmd};
 
 use super::get_checksums;
 use crate::{
-    check::{check_curl, check_git, check_repo, CheckResults},
+    check::{CheckResults, check_curl, check_git, check_repo},
     config::AppConfig,
     error::Result,
     publish::{commit_and_push, prepare_git_repo, write_and_add},
@@ -42,7 +42,7 @@ impl Repository for Aur {
             (!ssh_configured).then_some("AUR SSH access is not configured"),
         );
 
-        let name = get_name(&info);
+        let name = get_name(info);
 
         check_repo(
             &sh,
@@ -72,7 +72,7 @@ impl Repository for Aur {
         let name = get_name(info);
         let (sh, dir) = prepare_git_repo(self, &format!("ssh://aur@aur.archlinux.org/{name}.git"))?;
 
-        let github_repo_name = repository.split('/').last().unwrap();
+        let github_repo_name = repository.split('/').next_back().unwrap();
 
         let checksums = get_checksums(info, version, vec![Target::Source])?;
 
@@ -106,7 +106,9 @@ impl Repository for Aur {
                 format!("makedepends=('cargo')"),
                 format!("provides=({cli_name:?})"),
                 format!("conflicts=({conflicts_pkgbuild})"),
-                format!("source=($pkgname-$pkgver.zip::https://github.com/{repository}/archive/refs/tags/v$pkgver.zip)"),
+                format!(
+                    "source=($pkgname-$pkgver.zip::https://github.com/{repository}/archive/refs/tags/v$pkgver.zip)"
+                ),
                 format!("sha256sums=({:?})", checksums.get(&Target::Source).unwrap()),
                 format!(""),
                 format!("build() {{"),
@@ -116,8 +118,12 @@ impl Repository for Aur {
                 format!(""),
                 format!("package() {{"),
                 format!("    cd \"$srcdir/{github_repo_name}-$pkgver\""),
-                format!("    install -Dm755 \"target/release/{cli_name}\" \"$pkgdir/usr/bin/{cli_name}\""),
-                format!("    install -Dm644 \"LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""),
+                format!(
+                    "    install -Dm755 \"target/release/{cli_name}\" \"$pkgdir/usr/bin/{cli_name}\""
+                ),
+                format!(
+                    "    install -Dm644 \"LICENSE\" \"$pkgdir/usr/share/licenses/{cli_name}/LICENSE\""
+                ),
                 format!("}}"),
             ]
         })?;
