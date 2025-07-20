@@ -1,4 +1,4 @@
-use clap::builder::{styling::AnsiColor, Styles};
+use clap::builder::{Styles, styling::AnsiColor};
 
 pub fn styles() -> Styles {
     Styles::styled()

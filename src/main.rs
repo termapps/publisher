@@ -4,7 +4,6 @@ use anstream::{AutoStream, ColorChoice};
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 use colorchoice_clap::Color;
-use tracing_log::AsTrace;
 use tracing_subscriber::prelude::*;
 
 mod error;
@@ -43,7 +42,7 @@ fn main() {
                 .without_time()
                 .with_target(false)
                 .with_ansi(!matches!(AutoStream::choice(&stdout()), ColorChoice::Never))
-                .with_filter(program.verbose.log_level_filter().as_trace()),
+                .with_filter(program.verbose.tracing_level_filter()),
         )
         .init();
 
