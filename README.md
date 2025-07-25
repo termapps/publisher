@@ -151,9 +151,10 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 | Name         |   Type   | Required | Description                            |
 | ------------ | :------: | :------: | -------------------------------------- |
 | `name`       |  string  |    No    | Name of the formula                    |
-| `repository` |  string  |   Yes    | GitHub repository for the homebrew tap |
+| `repository` |  string  |    No    | GitHub repository for the homebrew tap |
 
 - `name` defaults to the binary name.
+- `repository` defaults to binary's GitHub repository.
 
 <!-- omit from toc -->
 #### AUR
@@ -183,9 +184,10 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 | Name         |   Type   | Required | Description                            |
 | ------------ | :------: | :------: | -------------------------------------- |
 | `name`       |  string  |    No    | Name of the app                        |
-| `repository` |  string  |   Yes    | GitHub repository for the scoop bucket |
+| `repository` |  string  |    No    | GitHub repository for the scoop bucket |
 
 - `name` defaults to the binary name.
+- `repository` defaults to binary's GitHub repository.
 
 <!-- omit from toc -->
 #### Nix

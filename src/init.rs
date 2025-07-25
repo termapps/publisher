@@ -70,14 +70,17 @@ impl Init {
                 .prompt()?;
 
             let homebrew_repository = Text::new("Homebrew tap GitHub repository URI?")
-                .with_placeholder("termapps/homebrew-tap")
+                .with_initial_value(&repository)
                 .with_validator(required!())
                 .with_validator(repo_uri_validator)
                 .prompt()?;
 
-            Some(HomebrewConfig {
-                name: (homebrew_name != name).then_some(homebrew_name),
-                repository: homebrew_repository,
+            let different_name = homebrew_name != name;
+            let different_repo = homebrew_repository != repository;
+
+            (different_name || different_repo).then_some(HomebrewConfig {
+                name: different_name.then_some(homebrew_name),
+                repository: different_repo.then_some(homebrew_repository),
             })
         } else {
             None
@@ -124,14 +127,17 @@ impl Init {
                 .prompt()?;
 
             let scoop_repository = Text::new("Scoop bucket GitHub repository URI?")
-                .with_placeholder("termapps/scoop-bucket")
+                .with_initial_value(&repository)
                 .with_validator(required!())
                 .with_validator(repo_uri_validator)
                 .prompt()?;
 
-            Some(ScoopConfig {
-                name: (scoop_name != name).then_some(scoop_name),
-                repository: scoop_repository,
+            let different_name = scoop_name != name;
+            let different_repo = scoop_repository != repository;
+
+            (different_name || different_repo).then_some(ScoopConfig {
+                name: different_name.then_some(scoop_name),
+                repository: different_repo.then_some(scoop_repository),
             })
         } else {
             None

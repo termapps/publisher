@@ -1,4 +1,3 @@
-use eyre::eyre;
 use serde::{Deserialize, Serialize};
 use xshell::Shell;
 
@@ -12,12 +11,10 @@ use crate::{
     targets::Target,
 };
 
-const NO_SCOOP_CONFIG: &str = "No configuration found for scoop";
-
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct ScoopConfig {
     pub name: Option<String>,
-    pub repository: String,
+    pub repository: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -34,17 +31,15 @@ impl Repository for Scoop {
         check_git(&sh, results);
         check_curl(&sh, results);
 
-        if let Some(scoop) = &info.scoop {
-            check_repo(
-                &sh,
-                &format!("git@github.com:{}", scoop.repository),
-                "master",
-                results,
-                false,
-            )?;
-        } else {
-            results.add_result("config", Some("No configuration found for scoop"));
-        }
+        let repository = get_repository(info);
+
+        check_repo(
+            &sh,
+            &format!("git@github.com:{repository}"),
+            "master",
+            results,
+            false,
+        )?;
 
         Ok(())
     }
@@ -59,10 +54,9 @@ impl Repository for Scoop {
             ..
         } = info;
 
-        let scoop = info.scoop.as_ref().ok_or(eyre!(NO_SCOOP_CONFIG))?;
-
         let name = get_name(info);
-        let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{}", scoop.repository))?;
+        let pkg_repo = get_repository(info);
+        let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{pkg_repo}"))?;
 
         let checksums = get_checksums(
             info,
@@ -110,19 +104,15 @@ impl Repository for Scoop {
     }
 
     fn instructions(&self, info: &AppConfig) -> Result<Vec<String>> {
-        let scoop = info.scoop.as_ref().ok_or(eyre!(NO_SCOOP_CONFIG))?;
-
         let name = get_name(info);
-        let bucket_org_name = scoop.repository.split('/').next().unwrap();
+        let repository = get_repository(info);
+        let bucket_org_name = repository.split('/').next().unwrap();
 
         Ok(vec![
             format!("With [Scoop](https://scoop.sh)"),
             format!(""),
             format!("```"),
-            format!(
-                "scoop bucket add {bucket_org_name} https://github.com/{}",
-                scoop.repository
-            ),
+            format!("scoop bucket add {bucket_org_name} https://github.com/{repository}"),
             format!("scoop install {name}"),
             format!("```"),
         ])
@@ -134,4 +124,11 @@ fn get_name(info: &AppConfig) -> String {
         .as_ref()
         .and_then(|scoop| scoop.name.clone())
         .unwrap_or_else(|| info.name.clone())
+}
+
+fn get_repository(info: &AppConfig) -> String {
+    info.scoop
+        .as_ref()
+        .and_then(|scoop| scoop.repository.clone())
+        .unwrap_or_else(|| info.repository.clone())
 }

@@ -1,4 +1,3 @@
-use eyre::eyre;
 use heck::ToUpperCamelCase;
 use serde::{Deserialize, Serialize};
 use xshell::Shell;
@@ -13,12 +12,10 @@ use crate::{
     targets::Target,
 };
 
-const NO_HOMEBREW_CONFIG: &str = "No configuration found for homebrew";
-
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct HomebrewConfig {
     pub name: Option<String>,
-    pub repository: String,
+    pub repository: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -35,17 +32,15 @@ impl Repository for Homebrew {
         check_git(&sh, results);
         check_curl(&sh, results);
 
-        if let Some(homebrew) = &info.homebrew {
-            check_repo(
-                &sh,
-                &format!("git@github.com:{}", homebrew.repository),
-                "master",
-                results,
-                false,
-            )?;
-        } else {
-            results.add_result("config", Some("No configuration found for homebrew"));
-        }
+        let repository = get_repository(info);
+
+        check_repo(
+            &sh,
+            &format!("git@github.com:{repository}"),
+            "master",
+            results,
+            false,
+        )?;
 
         Ok(())
     }
@@ -60,10 +55,9 @@ impl Repository for Homebrew {
             ..
         } = info;
 
-        let homebrew = info.homebrew.as_ref().ok_or(eyre!(NO_HOMEBREW_CONFIG))?;
-
         let name = get_name(info);
-        let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{}", homebrew.repository))?;
+        let pkg_repo = get_repository(info);
+        let (sh, dir) = prepare_git_repo(self, &format!("git@github.com:{pkg_repo}"))?;
 
         let checksums = get_checksums(
             info,
@@ -130,11 +124,10 @@ impl Repository for Homebrew {
     }
 
     fn instructions(&self, info: &AppConfig) -> Result<Vec<String>> {
-        let homebrew = info.homebrew.as_ref().ok_or(eyre!(NO_HOMEBREW_CONFIG))?;
-
         let name = get_name(info);
-        let tap_org_name = homebrew.repository.split('/').next().unwrap();
-        let tap_name = homebrew.repository.split('/').next_back().unwrap();
+        let repository = get_repository(info);
+        let tap_org_name = repository.split('/').next().unwrap();
+        let tap_name = repository.split('/').next_back().unwrap();
 
         let contents = if tap_name.starts_with("homebrew-") {
             format!(
@@ -166,4 +159,11 @@ fn get_name(info: &AppConfig) -> String {
         .as_ref()
         .and_then(|homebrew| homebrew.name.clone())
         .unwrap_or_else(|| info.name.clone())
+}
+
+fn get_repository(info: &AppConfig) -> String {
+    info.homebrew
+        .as_ref()
+        .and_then(|homebrew| homebrew.repository.clone())
+        .unwrap_or_else(|| info.repository.clone())
 }
