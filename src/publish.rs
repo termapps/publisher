@@ -1,6 +1,6 @@
 use std::{
     fmt::Debug,
-    fs::{create_dir_all, remove_dir_all, remove_file, write},
+    fs::{create_dir_all, remove_dir_all, write},
     path::Path,
 };
 

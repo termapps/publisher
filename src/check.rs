@@ -81,7 +81,7 @@ pub struct CheckResults {
 
 impl CheckResults {
     pub fn has_checked(&mut self, name: &str) -> bool {
-        let checked = self.checked.contains_key(&name.to_string());
+        let checked = self.checked.contains_key(name);
 
         if checked {
             self.add_check_to_repo(name);
