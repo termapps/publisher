@@ -241,6 +241,6 @@ Report [here](http://github.com/termapps/publisher/issues).
 
 <!-- omit from toc -->
 ## Creator
-Pavan Kumar Sunkara (pavan.sss1991@gmail.com)
+Pavan Kumar Sunkara
 
-Follow me on [github](https://github.com/users/follow?target=pksunkara), [twitter](http://twitter.com/pksunkara)
+Follow me on [github](https://github.com/users/follow?target=pksunkara), [bluesky](http://bsky.app/profile/pksunkara.com)

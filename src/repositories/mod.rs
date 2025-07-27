@@ -5,6 +5,7 @@ use std::{
 
 pub mod aur;
 pub mod aur_bin;
+pub mod debian;
 pub mod homebrew;
 pub mod nix;
 pub mod scoop;
@@ -28,6 +29,7 @@ pub trait Repository {
 #[derive(Debug, Clone, PartialEq, Eq, ValueEnum)]
 pub enum Repositories {
     Homebrew,
+    Debian,
     Aur,
     AurBin,
     Scoop,
@@ -44,6 +46,7 @@ impl Repositories {
     pub fn build(&self) -> Box<dyn Repository> {
         match self {
             Repositories::Homebrew => Box::new(homebrew::Homebrew),
+            Repositories::Debian => Box::new(debian::Debian),
             Repositories::Aur => Box::new(aur::Aur),
             Repositories::AurBin => Box::new(aur_bin::AurBin),
             Repositories::Scoop => Box::new(scoop::Scoop),

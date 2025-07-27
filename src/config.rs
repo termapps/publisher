@@ -7,8 +7,8 @@ use xshell::{Shell, cmd};
 use crate::{
     error::Result,
     repositories::{
-        aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig, nix::NixConfig,
-        scoop::ScoopConfig,
+        aur::AurConfig, aur_bin::AurBinConfig, debian::DebianConfig, homebrew::HomebrewConfig,
+        nix::NixConfig, scoop::ScoopConfig,
     },
 };
 
@@ -28,6 +28,7 @@ pub struct AppConfig {
     pub exclude: Option<Vec<String>>,
     pub cargo: Option<String>,
     pub homebrew: Option<HomebrewConfig>,
+    pub debian: Option<DebianConfig>,
     pub aur: Option<AurConfig>,
     pub aur_bin: Option<AurBinConfig>,
     pub scoop: Option<ScoopConfig>,
