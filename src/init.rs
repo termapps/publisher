@@ -13,8 +13,8 @@ use crate::{
     config::{AppConfig, CONFIG_FILE, read_cargo_config},
     error::Result,
     repositories::{
-        Repositories, aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig,
-        nix::NixConfig, scoop::ScoopConfig,
+        Repositories, aur::AurConfig, aur_bin::AurBinConfig, debian::DebianConfig,
+        homebrew::HomebrewConfig, nix::NixConfig, scoop::ScoopConfig,
     },
 };
 
@@ -81,6 +81,19 @@ impl Init {
             (different_name || different_repo).then_some(HomebrewConfig {
                 name: different_name.then_some(homebrew_name),
                 repository: different_repo.then_some(homebrew_repository),
+            })
+        } else {
+            None
+        };
+
+        let debian = if package_repositories.contains(&Repositories::Debian) {
+            let debian_name = Text::new("Debian package name?")
+                .with_initial_value(&name)
+                .with_validator(required!())
+                .prompt()?;
+
+            Some(DebianConfig {
+                name: (debian_name != name).then_some(debian_name),
             })
         } else {
             None
@@ -199,6 +212,7 @@ impl Init {
             exclude: (!exclude.is_empty()).then_some(exclude),
             cargo: None,
             homebrew,
+            debian,
             aur,
             aur_bin,
             scoop,
