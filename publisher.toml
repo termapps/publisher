@@ -16,3 +16,6 @@ repository = "termapps/nixpkgs"
 
 lockfile = false
 path     = "%n.nix"
+
+[npm]
+name = "@termapps/cli-clap"
