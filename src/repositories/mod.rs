@@ -127,7 +127,10 @@ fn get_checksums(
                 format!("")
             };
 
-            let checksum = get(format!("{download_url}{target_str}_sha256sum.txt"))?.text()?;
+            let checksum = get(format!("{download_url}{target_str}_sha256sum.txt"))?
+                .text()?
+                .trim()
+                .to_string();
 
             Ok((target, checksum))
         })

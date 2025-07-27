@@ -62,7 +62,7 @@ pub fn prepare_tmp_dir(repository: &dyn Repository) -> Result<(Shell, String)> {
     let sh = Shell::new()?;
     let dir = format!("/tmp/publisher/{id}");
 
-    remove_dir_all(&dir)?;
+    remove_dir_all(&dir).ok();
     create_dir_all(&dir)?;
 
     sh.change_dir(&dir);
