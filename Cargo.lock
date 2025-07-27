@@ -990,7 +990,7 @@ dependencies = [
 
 [[package]]
 name = "publisher"
-version = "0.1.9"
+version = "0.1.12"
 dependencies = [
  "anstream",
  "clap",

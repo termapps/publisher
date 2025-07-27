@@ -1,6 +1,6 @@
 use std::{
     fmt::Debug,
-    fs::{create_dir_all, remove_dir_all, write},
+    fs::{create_dir_all, remove_dir_all, remove_file, write},
     path::Path,
 };
 
@@ -127,6 +127,38 @@ where
     write_file(dir, path, writer)?;
 
     cmd!(sh, "git add {path}").quiet().run()?;
+
+    Ok(())
+}
+
+pub fn download_binary<P>(sh: &Shell, dir: &str, path: P, archive_url: &str) -> Result
+where
+    P: AsRef<str> + Debug,
+{
+    let path = path.as_ref();
+
+    let archive_path = Path::new(dir).join("archive.zip");
+    let full_path = Path::new(dir).join(path);
+
+    // Ensure the parent directory exists, otherwise fails on linux
+    if let Some(parent) = full_path.parent() {
+        create_dir_all(parent)?;
+    }
+
+    info!("  {:>11} {}", "downloading".magenta(), path.cyan());
+
+    cmd!(sh, "curl -L {archive_url} -o {archive_path}")
+        .quiet()
+        .ignore_stdout()
+        .ignore_stderr()
+        .run()?;
+
+    cmd!(sh, "unzip -o {archive_path} -d {full_path}")
+        .quiet()
+        .ignore_stdout()
+        .run()?;
+
+    remove_file(archive_path)?;
 
     Ok(())
 }

@@ -7,6 +7,7 @@ pub mod aur;
 pub mod aur_bin;
 pub mod homebrew;
 pub mod nix;
+pub mod npm;
 pub mod scoop;
 
 use clap::ValueEnum;
@@ -32,6 +33,8 @@ pub enum Repositories {
     AurBin,
     Scoop,
     Nix,
+    #[allow(clippy::upper_case_acronyms)]
+    NPM,
 }
 
 impl Display for Repositories {
@@ -48,6 +51,7 @@ impl Repositories {
             Repositories::AurBin => Box::new(aur_bin::AurBin),
             Repositories::Scoop => Box::new(scoop::Scoop),
             Repositories::Nix => Box::new(nix::Nix),
+            Repositories::NPM => Box::new(npm::NPM),
         }
     }
 }

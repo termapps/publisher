@@ -8,7 +8,7 @@ use crate::{
     error::Result,
     repositories::{
         aur::AurConfig, aur_bin::AurBinConfig, homebrew::HomebrewConfig, nix::NixConfig,
-        scoop::ScoopConfig,
+        npm::NPMConfig, scoop::ScoopConfig,
     },
 };
 
@@ -32,6 +32,7 @@ pub struct AppConfig {
     pub aur_bin: Option<AurBinConfig>,
     pub scoop: Option<ScoopConfig>,
     pub nix: Option<NixConfig>,
+    pub npm: Option<NPMConfig>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
