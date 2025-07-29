@@ -156,9 +156,17 @@ function run() {
     fs.chmodSync(binaryPath, 0o755);
   }
 
-  execFileSync(binaryPath, process.argv.slice(2), {
-    stdio: "inherit",
-  });
+  try {
+    execFileSync(binaryPath, process.argv.slice(2), {
+      stdio: "inherit",
+    });
+  } catch (error) {
+    if (error.status === undefined) {
+      throw error;
+    }
+
+    process.exit(error.status);
+  }
 }
 
 module.exports = {
