@@ -90,7 +90,7 @@ impl CI {
                 format!("      fail-fast: false"),
                 format!("      matrix:"),
                 format!("        include:"),
-                format!("          - os: macos-13"),
+                format!("          - os: macos-15-intel"),
                 format!("            target: x86_64-apple-darwin"),
                 format!("          - os: macos-latest"),
                 format!("            target: aarch64-apple-darwin"),
