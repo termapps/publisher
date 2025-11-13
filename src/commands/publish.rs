@@ -19,19 +19,19 @@ use crate::{
 #[derive(Debug, Parser)]
 pub struct Publish {
     /// Version to publish
-    version: String,
+    pub version: String,
 
     /// The name(s) of the package repository
-    repositories: Vec<Repositories>,
+    pub repositories: Vec<Repositories>,
 
     /// Disable dry run mode
     #[clap(long)]
-    no_dry_run: bool,
+    pub no_dry_run: bool,
 }
 
 impl Publish {
     #[instrument(name = "publish", skip_all)]
-    pub fn run(self) -> Result {
+    pub(crate) fn run(&self) -> Result {
         let mut config = read_config()?;
         let exclude = config.exclude.clone().unwrap_or_default();
 
@@ -56,7 +56,7 @@ impl Publish {
     }
 }
 
-pub fn prepare_tmp_dir(repository: &dyn Repository) -> Result<(Shell, String)> {
+pub(crate) fn prepare_tmp_dir(repository: &dyn Repository) -> Result<(Shell, String)> {
     let id = repository.name();
 
     let sh = Shell::new()?;
@@ -70,7 +70,10 @@ pub fn prepare_tmp_dir(repository: &dyn Repository) -> Result<(Shell, String)> {
     Ok((sh, dir))
 }
 
-pub fn prepare_git_repo(repository: &dyn Repository, remote: &str) -> Result<(Shell, String)> {
+pub(crate) fn prepare_git_repo(
+    repository: &dyn Repository,
+    remote: &str,
+) -> Result<(Shell, String)> {
     let (sh, dir) = prepare_tmp_dir(repository)?;
 
     cmd!(sh, "git init").quiet().ignore_stdout().run()?;
@@ -96,7 +99,7 @@ pub fn prepare_git_repo(repository: &dyn Repository, remote: &str) -> Result<(Sh
     Ok((sh, dir))
 }
 
-pub fn write_file<P, F>(dir: &str, path: P, writer: F) -> Result
+pub(crate) fn write_file<P, F>(dir: &str, path: P, writer: F) -> Result
 where
     P: AsRef<str> + Debug,
     F: FnOnce() -> Vec<String>,
@@ -117,7 +120,7 @@ where
     Ok(())
 }
 
-pub fn write_and_add<P, F>(sh: &Shell, dir: &str, path: P, writer: F) -> Result
+pub(crate) fn write_and_add<P, F>(sh: &Shell, dir: &str, path: P, writer: F) -> Result
 where
     P: AsRef<str> + Debug,
     F: FnOnce() -> Vec<String>,
@@ -131,7 +134,7 @@ where
     Ok(())
 }
 
-pub fn download_binary<P>(sh: &Shell, dir: &str, path: P, archive_url: &str) -> Result
+pub(crate) fn download_binary<P>(sh: &Shell, dir: &str, path: P, archive_url: &str) -> Result
 where
     P: AsRef<str> + Debug,
 {
@@ -163,7 +166,7 @@ where
     Ok(())
 }
 
-pub fn commit_and_push(sh: &Shell, name: &str, version: &str) -> Result {
+pub(crate) fn commit_and_push(sh: &Shell, name: &str, version: &str) -> Result {
     let message = format!("{name}: {version}");
 
     cmd!(sh, "git commit -m {message}")

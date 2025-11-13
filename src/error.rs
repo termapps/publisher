@@ -26,7 +26,7 @@ pub fn finish(result: Result) {
     exit(code);
 }
 
-pub fn exit(code: Code) {
+pub fn exit(code: Code) -> ! {
     stdout().flush().unwrap();
     stderr().flush().unwrap();
 

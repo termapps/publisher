@@ -3,19 +3,19 @@ use std::{
     fmt::{Debug, Display, Formatter, Result as FmtResult},
 };
 
-pub mod aur;
-pub mod aur_bin;
-pub mod homebrew;
-pub mod nix;
-pub mod npm;
-pub mod scoop;
+pub(crate) mod aur;
+pub(crate) mod aur_bin;
+pub(crate) mod homebrew;
+pub(crate) mod nix;
+pub(crate) mod npm;
+pub(crate) mod scoop;
 
 use clap::ValueEnum;
 use reqwest::blocking::get;
 
-use crate::{check::CheckResults, config::AppConfig, error::Result, targets::Target};
+use crate::{commands::check::CheckResults, config::AppConfig, error::Result, targets::Target};
 
-pub trait Repository {
+pub(crate) trait Repository {
     fn name(&self) -> &'static str;
 
     fn check(&self, check_result: &mut CheckResults, info: &AppConfig) -> Result;
@@ -44,7 +44,7 @@ impl Display for Repositories {
 }
 
 impl Repositories {
-    pub fn build(&self) -> Box<dyn Repository> {
+    pub(crate) fn build(&self) -> Box<dyn Repository> {
         match self {
             Repositories::Homebrew => Box::new(homebrew::Homebrew),
             Repositories::Aur => Box::new(aur::Aur),
@@ -74,14 +74,18 @@ fn get_repositories<'a>(
         .collect()
 }
 
-pub fn build(repositories: &[Repositories], exclude: &[String]) -> Vec<Box<dyn Repository>> {
+pub(crate) fn build(repositories: &[Repositories], exclude: &[String]) -> Vec<Box<dyn Repository>> {
     get_repositories(repositories, exclude)
         .into_iter()
         .map(Repositories::build)
         .collect()
 }
 
-pub fn update_config(repositories: &[Repositories], exclude: &[String], config: &mut AppConfig) {
+pub(crate) fn update_config(
+    repositories: &[Repositories],
+    exclude: &[String],
+    config: &mut AppConfig,
+) {
     let repos = get_repositories(repositories, exclude);
 
     // Add conflicts between AUR and AUR (bin) if both are selected

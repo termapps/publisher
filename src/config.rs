@@ -12,44 +12,44 @@ use crate::{
     },
 };
 
-pub const CONFIG_FILE: &str = "publisher.toml";
+pub(crate) const CONFIG_FILE: &str = "publisher.toml";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct AppConfig {
+pub(crate) struct AppConfig {
     #[serde(skip_serializing_if = "String::is_empty")]
-    pub name: String,
+    pub(crate) name: String,
     #[serde(skip_serializing_if = "String::is_empty")]
-    pub description: String,
+    pub(crate) description: String,
     #[serde(skip_serializing_if = "String::is_empty")]
-    pub homepage: String,
+    pub(crate) homepage: String,
     #[serde(skip_serializing_if = "String::is_empty")]
-    pub license: String,
-    pub repository: String,
-    pub exclude: Option<Vec<String>>,
-    pub cargo: Option<String>,
-    pub homebrew: Option<HomebrewConfig>,
-    pub aur: Option<AurConfig>,
-    pub aur_bin: Option<AurBinConfig>,
-    pub scoop: Option<ScoopConfig>,
-    pub nix: Option<NixConfig>,
-    pub npm: Option<NPMConfig>,
+    pub(crate) license: String,
+    pub(crate) repository: String,
+    pub(crate) exclude: Option<Vec<String>>,
+    pub(crate) cargo: Option<String>,
+    pub(crate) homebrew: Option<HomebrewConfig>,
+    pub(crate) aur: Option<AurConfig>,
+    pub(crate) aur_bin: Option<AurBinConfig>,
+    pub(crate) scoop: Option<ScoopConfig>,
+    pub(crate) nix: Option<NixConfig>,
+    pub(crate) npm: Option<NPMConfig>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
-pub struct CargoMetadataPackage {
-    pub name: Option<String>,
-    pub description: Option<String>,
-    pub homepage: Option<String>,
-    pub license: Option<String>,
-    pub publish: Option<Vec<String>>,
+pub(crate) struct CargoMetadataPackage {
+    pub(crate) name: Option<String>,
+    pub(crate) description: Option<String>,
+    pub(crate) homepage: Option<String>,
+    pub(crate) license: Option<String>,
+    pub(crate) publish: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
 struct CargoMetadata {
-    pub packages: Vec<CargoMetadataPackage>,
+    pub(crate) packages: Vec<CargoMetadataPackage>,
 }
 
-pub fn read_cargo_config() -> Result<CargoMetadataPackage> {
+pub(crate) fn read_cargo_config() -> Result<CargoMetadataPackage> {
     let sh = Shell::new()?;
 
     // Read cargo metadata if exists
@@ -65,7 +65,7 @@ pub fn read_cargo_config() -> Result<CargoMetadataPackage> {
     Ok(metadata.packages.first().cloned().unwrap_or_default())
 }
 
-pub fn read_config() -> Result<AppConfig> {
+pub(crate) fn read_config() -> Result<AppConfig> {
     let package = read_cargo_config()?;
 
     let builder = Config::builder()

@@ -1,22 +1,23 @@
 use serde::{Deserialize, Serialize};
 use xshell::{Shell, cmd};
 
-use super::get_checksums;
 use crate::{
-    check::{CheckResults, check_git, check_program, check_repo},
+    commands::{
+        check::{CheckResults, check_git, check_program, check_repo},
+        publish::{commit_and_push, prepare_git_repo, write_and_add},
+    },
     config::AppConfig,
     error::Result,
-    publish::{commit_and_push, prepare_git_repo, write_and_add},
-    repositories::Repository,
+    repositories::{Repository, get_checksums},
     targets::Target,
 };
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
-pub struct NixConfig {
-    pub name: Option<String>,
-    pub repository: Option<String>,
-    pub path: Option<String>,
-    pub lockfile: Option<bool>,
+pub(crate) struct NixConfig {
+    pub(crate) name: Option<String>,
+    pub(crate) repository: Option<String>,
+    pub(crate) path: Option<String>,
+    pub(crate) lockfile: Option<bool>,
 }
 
 #[derive(Debug, Clone)]

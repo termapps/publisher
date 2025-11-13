@@ -231,7 +231,7 @@ Publisher can be configured using `publisher.toml` file. The below options are a
 
 <!-- omit from toc -->
 ## Contributors
-Here is a list of [Contributors](http://github.com/termapps/publisher/contributors)
+Here is a list of [Contributors](https://github.com/termapps/publisher/contributors)
 
 <!-- omit from toc -->
 ### TODO
@@ -254,7 +254,7 @@ MIT/X11
 
 <!-- omit from toc -->
 ## Bug Reports
-Report [here](http://github.com/termapps/publisher/issues).
+Report [here](https://github.com/termapps/publisher/issues).
 
 <!-- omit from toc -->
 ## Creator

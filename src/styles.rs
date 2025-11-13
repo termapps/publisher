@@ -1,6 +1,6 @@
 use clap::builder::{Styles, styling::AnsiColor};
 
-pub fn styles() -> Styles {
+pub(crate) fn styles() -> Styles {
     Styles::styled()
         .header(AnsiColor::BrightYellow.on_default())
         .usage(AnsiColor::BrightYellow.on_default())

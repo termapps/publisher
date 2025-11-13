@@ -2,17 +2,19 @@ use serde::{Deserialize, Serialize};
 use xshell::{Shell, cmd};
 
 use crate::{
-    check::{CheckResults, check_program},
+    commands::{
+        check::{CheckResults, check_program},
+        publish::{download_binary, prepare_tmp_dir, write_file},
+    },
     config::AppConfig,
     error::Result,
-    publish::{download_binary, prepare_tmp_dir, write_file},
     repositories::Repository,
     targets::Target,
 };
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
-pub struct NPMConfig {
-    pub name: Option<String>,
+pub(crate) struct NPMConfig {
+    pub(crate) name: Option<String>,
 }
 
 #[allow(clippy::upper_case_acronyms)]

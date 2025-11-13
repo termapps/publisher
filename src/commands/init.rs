@@ -26,7 +26,7 @@ pub struct Init {}
 
 impl Init {
     #[instrument(name = "init", skip_all)]
-    pub fn run(self) -> Result {
+    pub(crate) fn run(&self) -> Result {
         let package = read_cargo_config()?;
 
         let name = Text::new("Name of the binary?")

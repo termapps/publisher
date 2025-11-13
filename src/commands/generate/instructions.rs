@@ -13,24 +13,24 @@ use crate::{config::AppConfig, error::Result, repositories::build};
 #[derive(Debug, Parser)]
 pub struct Instructions {
     /// File in which to place the instructions
-    file: String,
+    pub file: String,
 
     /// Marks the beginning of the file content to replace with instructions
     #[clap(long, default_value = "<!-- publisher install start -->")]
-    start_marker: String,
+    pub start_marker: String,
 
     /// Marks the end of the file content to replace with instructions
     #[clap(long, default_value = "<!-- publisher install end -->")]
-    end_marker: String,
+    pub end_marker: String,
 
     /// Prefix for each section in the installation instructions
     #[clap(long, default_value = "#### ")]
-    prefix: String,
+    pub prefix: String,
 }
 
 impl Instructions {
     #[instrument(name = "install", skip_all)]
-    pub fn run(self, info: &AppConfig) -> Result {
+    pub(crate) fn run(&self, info: &AppConfig) -> Result {
         let AppConfig {
             name,
             repository,

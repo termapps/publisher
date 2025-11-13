@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum Target {
+pub(crate) enum Target {
     Aarch64AppleDarwin,
     X86_64AppleDarwin,
     X86_64UnknownLinuxGnu,

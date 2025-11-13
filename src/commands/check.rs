@@ -16,12 +16,12 @@ use crate::{
 #[derive(Debug, Parser)]
 pub struct Check {
     /// The name(s) of the package repository
-    repositories: Vec<Repositories>,
+    pub repositories: Vec<Repositories>,
 }
 
 impl Check {
     #[instrument(name = "check", skip_all)]
-    pub fn run(self) -> Result {
+    pub(crate) fn run(&self) -> Result {
         let config = read_config()?;
 
         let repositories = build(
@@ -73,14 +73,14 @@ impl Check {
 }
 
 #[derive(Debug, Default)]
-pub struct CheckResults {
+pub(crate) struct CheckResults {
     current: Option<String>,
     checked: HashMap<String, (Option<String>, bool)>,
     checks_per_repo: HashMap<String, Vec<String>>,
 }
 
 impl CheckResults {
-    pub fn has_checked(&mut self, name: &str) -> bool {
+    pub(crate) fn has_checked(&mut self, name: &str) -> bool {
         let checked = self.checked.contains_key(name);
 
         if checked {
@@ -98,18 +98,23 @@ impl CheckResults {
     }
 
     #[inline]
-    pub fn add_result(&mut self, name: &str, result: Option<impl Into<String>>) {
+    pub(crate) fn add_result(&mut self, name: &str, result: Option<impl Into<String>>) {
         self.add_result_warn(name, result, false);
     }
 
-    pub fn add_result_warn(&mut self, name: &str, result: Option<impl Into<String>>, warn: bool) {
+    pub(crate) fn add_result_warn(
+        &mut self,
+        name: &str,
+        result: Option<impl Into<String>>,
+        warn: bool,
+    ) {
         self.checked
             .insert(name.to_string(), (result.map(|s| s.into()), warn));
         self.add_check_to_repo(name);
     }
 }
 
-pub fn check_program(
+pub(crate) fn check_program(
     sh: &Shell,
     results: &mut CheckResults,
     program: &str,
@@ -131,11 +136,11 @@ pub fn check_program(
     }
 }
 
-pub fn check_git(sh: &Shell, results: &mut CheckResults) {
+pub(crate) fn check_git(sh: &Shell, results: &mut CheckResults) {
     check_program(sh, results, "git", "git --version", "git version");
 }
 
-pub fn check_repo(
+pub(crate) fn check_repo(
     sh: &Shell,
     remote: &str,
     branch: &str,

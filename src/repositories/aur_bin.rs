@@ -1,20 +1,21 @@
 use serde::{Deserialize, Serialize};
 use xshell::{Shell, cmd};
 
-use super::get_checksums;
 use crate::{
-    check::{CheckResults, check_git, check_repo},
+    commands::{
+        check::{CheckResults, check_git, check_repo},
+        publish::{commit_and_push, prepare_git_repo, write_and_add},
+    },
     config::AppConfig,
     error::Result,
-    publish::{commit_and_push, prepare_git_repo, write_and_add},
-    repositories::Repository,
+    repositories::{Repository, get_checksums},
     targets::Target,
 };
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
-pub struct AurBinConfig {
-    pub name: Option<String>,
-    pub conflicts: Option<Vec<String>>,
+pub(crate) struct AurBinConfig {
+    pub(crate) name: Option<String>,
+    pub(crate) conflicts: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone)]
